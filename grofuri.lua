@@ -4,6 +4,9 @@ _G.log = require('log')
 _G.tools = require('tools')
 _G.embed = require('embed')
 _G.commands = {}
+_G.colorChart = {
+    default = 0xF02E89
+}
 
 -- Internal variables
 local client = discordia.Client()

@@ -13,17 +13,23 @@ function embed:setUrl(url)
     self.url = url
 end
 
-function embed:setUrl(color)
-    self.color = color
+function embed:setColor(hex)
+    if not hex then
+        _G.log.print("Cannot add color for embed : no hexadecimal color given")
+        return
+    end
+
+    -- Compute colors from separate decimal to 16M colors
+    self.color = hex
 end
 
-function embed:setUrl(timestamp)
+function embed:setTimestamp(timestamp)
     self.timestamp = timestamp
 end
 
 function embed:setAuthor(name, url, icon_url)
     if not name then
-        _G.log:print("Cannot add author for embed " .. self.title .. " : name is empty")
+        _G.log:print("Cannot add author for embed : name is empty")
         return
     end
 
@@ -35,7 +41,7 @@ end
 
 function embed:setFooter(text, icon_url)
     if not text then
-        _G.log:print("Cannot add footer for embed " .. self.title .. " : text is empty")
+        _G.log:print("Cannot add footer for embed : text is empty")
         return
     end
 
@@ -54,17 +60,19 @@ function embed:setImage(url)
     self.image.url = url
 end
 
-function embed:addField(name, content)
+function embed:addField(name, value, inline)
     local field = {}
 
     field.name = name
-    field.value = content
+    field.value = value
+    field.inline = inline or false
 
-    table.insert(embed.fields, field)
+    if not self.fields then self.fields = {} end 
+    table.insert(self.fields, field)
 end
 
 function embed:new(title)
-    return setmetatable({title = title or "Default title"}, embed)
+    return setmetatable({}, embed)
 end
 
 return embed
