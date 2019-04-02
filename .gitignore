@@ -1,3 +1,7 @@
+# Bot related files
+token.txt
+*.log
+
 # Compiled Lua sources
 luac.out
 
