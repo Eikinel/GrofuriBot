@@ -5,12 +5,13 @@ local log = {
         "ERROR"
     },
     first_entry = true,
+    default = "grofuri.log",
     __metatable = false
 }
 
 -- Write to log file
 function log:print(msg, index, file)
-    local f = io.open(file or "grofuri.log", "a")
+    local f = io.open(file or self.default, "a")
     local date = os.date("%Y/%m/%d | %X | ")
     local scope = "[" .. (index and self.level[index] or self.level[1]) .. "] | "
 

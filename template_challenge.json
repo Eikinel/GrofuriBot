@@ -1,0 +1,37 @@
+{
+    "standard": [
+        {
+            "id": 1,
+            "authorId": "237995379432488960",
+            "title": "édites un message",
+            "description": "Que ce soit sur Discord, Slack ou n'importe quel autre outil de messagerie en ligne, éditer un message te fera perdre !"
+        },
+
+        {
+            "id": 2,
+            "authorId": "213031825533173760",
+            "title": "prononces le mot furry",
+            "description": "Le challenge n'est soumis qu'à la **parole**. Il est possible d'écrire sur papier ou numériquement le mot \"furry\""
+        },
+        
+        {
+            "id": 3,
+            "authorId": "169884954245857280",
+            "title": "pisses plus de 5 fois dans la journée",
+            "description": "J'espère juste que t'es pas une petite vessie."
+        }
+    ],
+
+    "events": [
+        {
+            "id": 1,
+            "date": "2019/12/25",
+            "eventName": "Noël",
+            "authorId": "195988355211591682",
+            "title": "*en l'attente d'un challenge*",
+            "description": "*en l'attente d'une description*"
+        }
+    ],
+
+    "done": []
+}

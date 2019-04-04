@@ -1,8 +1,8 @@
 -- Add discordia and various variables to the global scope
 _G.discordia = require('discordia')
-_G.log = require('log')
-_G.tools = require('tools')
-_G.embed = require('embed')
+_G.log = require('tools/log')
+_G.split = require('tools/split')
+_G.embed = require('tools/embed')
 _G.json = require('json')
 _G.commands = {}
 _G.colorChart = {
@@ -12,7 +12,7 @@ _G.colorChart = {
 -- Internal variables
 local client = discordia.Client()
 local clock = discordia.Clock()
-local selector = require('select_challenge')
+local challenge = require('select_challenge')
 local trigger = "%"
 local guildId = "422035277964378112"
 local channelId = "432140075308941314"
@@ -60,24 +60,34 @@ end)
 
 clock:on('hour', function()
     local now = os.date("*t")
+    local challengeFile = "challenges.json"
 
-    _G.log:print("H-" .. 25 - (now.hour + 1) .. " before starting a new challenge")
     -- Delivers new challenge everyday at midnight
     if (now.hour == 0) then
         local guild = client:getGuild(guildId)
 
         if not guild then
-            _G.log:print("No guild matching requirements with id " .. guildId .. " found.")
+            _G.log:print("No guild matching requirements with id " .. guildId .. " found.", 3)
+            return
+        end
+
+        local channel = guild:getChannel(channelId)
+        
+        if not channel then
+            _G.log:print("Cannot send challenge : channel not found", 3)
             return
         end
 
         -- Parse the appropriate JSON and select a challenge
         _G.log:print("Selecting new challenge")
-        selector:parse()
-        selector:selectChallenge(os.time())
+        if not challenge:parse(challengeFile) then return end
+        if not challenge:selectChallenge(os.time()) then return end
+        challenge:update(challengeFile)
+        _G.log:print("Updated file " .. challengeFile)
 
         -- Construct new message to send to the guild
-        local author = client:getUser(selector.challenge.authorId)
+        local current = challenge:getCurrent()
+        local author = client:getUser(current.authorId)
         local membed = embed.new()
 
         membed:setColor(_G.colorChart.default)
@@ -85,23 +95,18 @@ clock:on('hour', function()
         membed:setThumbnail(author and author:getAvatarURL() or nil)
         membed:setDescription("La challenge du jour est...")
         membed:addField(
-            "Si tu " .. selector.challenge.title .. " aujourd'hui, tu es **furry** !",
-            selector.challenge.description)
+            "Si tu " .. current.title .. " aujourd'hui, tu es **furry** !",
+            current.description)
         membed:addField(
             "Si vous avez perdu, pensez à utiliser la commande `%gperdu` pour enregistrer votre score de grofuri",
             [[\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_]])
         membed:setFooter("Proposé par " .. (author and author.tag or "Unknown"))
         membed:setTimestamp(os.date("!%Y-%m-%dT%TZ"))
 
-        local channel = guild:getChannel(channelId)
-        
-        if not channel then
-            _G.log:print("Cannot send challenge : channel not found")
-            return
-        end
-
         channel:send({embed = membed})
-        _G.log:print("Challenge n°" .. selector.challenge.id .. " sent to the guild \"" .. guild.name .. "\"")
+        _G.log:print("Challenge n°" .. current.id .. " sent to the guild \"" .. guild.name .. "\"")
+    else
+        _G.log:print("H-" .. 25 - (now.hour + 1) .. " before starting a new challenge")
     end
 end)
 
