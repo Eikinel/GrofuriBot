@@ -16,6 +16,14 @@ local function selectRandomSentence(data, msg) -- Select a random author, other 
     return msg.client:getUser(data[i].authorId), data[i].sentences[math.random(#data[i].sentences)] 
 end
 
+local function hasAlreadyLost(history)
+    for _, v in ipairs(history) do
+        if v.date == os.date("%y/%m/%d") then return true end
+    end
+
+    return false
+end
+
 _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
     local guild = msg.guild
     local author = msg.author
@@ -34,7 +42,14 @@ _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
     -- Add the lose to history
     if player then
         if not player.history then player.history = {} end -- Create empty history we'll fill
-        table.insert(player.history, {date = os.date("%y/%m/%d"), win = false, challengeId = _G.challenge:getCurrent().id})
+        if not hasAlreadyLost(player.history) then -- Don't duplicate data
+            table.insert(player.history, {date = os.date("%y/%m/%d"), win = false, challengeId = _G.challenge:getCurrent().id})
+            _G.log:print("Add lose at date " .. os.date("%y/%m/%d") .. " for player " .. author.name, 1)
+        else
+            msg:reply("Tu as déjà perdu, ce serait dommage d'être furry ET con...")
+            _G.log:print("Player " .. author.name .. " has already lost", 2)
+            return
+        end
     else
         _G.log:print(player.name .. " with ID " .. player.id .. " is a player but don't have its id registered", 3)
         msg:reply("Oups, une erreur est survenue, je vais vite prévenir " .. msg.client.owner.mentionString .. " !")
@@ -70,6 +85,4 @@ _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
         
         guild:getChannel(_G.channels.challenge):send({embed = membed})
     end
-
-    msg:delete()
 end)

@@ -16,7 +16,7 @@ _G.roles = {
     player = "563739379529547817"
 }
 _G.channels = {
-    challenge = "563709792150093843"
+    challenge = "563852208932651010"
 }
 
 -- Internal variables
@@ -84,6 +84,14 @@ clock:on('hour', function()
         if not channel then
             _G.log:print("Cannot send challenge : channel not found", 3)
             return
+        end
+
+        -- Reset grofuri roles for every players
+        for _, player in pairs(guild.members) do
+            if not player.user.bot and player:hasRole(_G.roles.grofuri) then
+                player:removeRole(_G.roles.grofuri)
+                _G.log:print("Flush role grofuri for player " .. player.tag)
+            end
         end
 
         -- Parse the appropriate JSON and select a challenge
