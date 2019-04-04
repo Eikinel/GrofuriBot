@@ -95,7 +95,7 @@ clock:on('hour', function()
         membed:setThumbnail(author and author:getAvatarURL() or nil)
         membed:setDescription("La challenge du jour est...")
         membed:addField(
-            "Si tu " .. current.title .. " aujourd'hui, tu es **furry** !",
+            "Si tu __**" .. current.title .. "**__ aujourd'hui, tu es *furry* !",
             current.description)
         membed:addField(
             "Si vous avez perdu, pensez à utiliser la commande `%gperdu` pour enregistrer votre score de grofuri",
