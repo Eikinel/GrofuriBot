@@ -4,6 +4,7 @@ local M = {
     current = {}
 }
 M.__index = M
+require('tools/copy')
 
 function M:parse(filepath)
     local file = io.open(filepath, "r")
@@ -20,7 +21,11 @@ function M:parse(filepath)
     
     -- Remove done challenges to keep only available ones
     for _, id in ipairs(self.all.done) do
-        table.remove(self.available.standard, id)
+        for i, chall in ipairs(self.available.standard) do
+            if id == chall.id then
+                table.remove(self.available.standard, i)
+            end
+        end
     end
 
     return true
@@ -39,7 +44,7 @@ function M:selectChallenge(timestamp)
         if tonumber(eventDate[1]) == now.year
         and tonumber(eventDate[2]) == now.month
         and tonumber(eventDate[3]) == now.day then
-            self.available = event
+            self.current = event
             return
         end
     end
@@ -51,7 +56,7 @@ function M:selectChallenge(timestamp)
 
     -- Pseudo randomize using seed before returning random challenge
     math.randomseed(os.time())
-    self.current = self.available.standard[math.random(#self.available.standard)]
+    self.current = copy(self.available.standard[math.random(#self.available.standard)])
 
     return true
 end

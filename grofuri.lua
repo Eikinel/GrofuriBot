@@ -4,6 +4,7 @@ _G.log = require('tools/log')
 _G.split = require('tools/split')
 _G.embed = require('tools/embed')
 _G.json = require('json')
+_G.challenge = require('select_challenge')
 _G.commands = {}
 _G.colorChart = {
     default = 0xF02E89
@@ -14,14 +15,15 @@ _G.roles = {
     grofuri = "563739629795409961",
     player = "563739379529547817"
 }
+_G.channels = {
+    challenge = "563709792150093843"
+}
 
 -- Internal variables
 local client = discordia.Client({cacheAllMembers = true})
 local clock = discordia.Clock()
-local challenge = require('select_challenge')
 local trigger = "%"
 local guildId = "563708262369984522"
-local channelId = "563709792150093843"
 
 client:once('ready', function()
     -- List all files in /commands
@@ -77,7 +79,7 @@ clock:on('hour', function()
             return
         end
 
-        local channel = guild:getChannel(channelId)
+        local channel = guild:getChannel(_G.channels.challenge)
         
         if not channel then
             _G.log:print("Cannot send challenge : channel not found", 3)
@@ -87,7 +89,11 @@ clock:on('hour', function()
         -- Parse the appropriate JSON and select a challenge
         _G.log:print("Selecting new challenge")
         if not challenge:parse(challengeFile) then return end
-        if not challenge:selectChallenge(os.time()) then return end
+        if not challenge:selectChallenge(os.time()) then
+            channel:send("Oops, je n'ai plus de challenge à vous proposez ! Donnez-moi de quoi vous challenger !")
+            return
+        end
+
         challenge:update(challengeFile)
         _G.log:print("Updated file " .. challengeFile)
 
