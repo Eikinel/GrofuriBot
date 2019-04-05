@@ -5,6 +5,7 @@ _G.registerCommand({"register", "add"}, function(msg, args)
     if #args > 0 then
         local newPlayer = args[1]
 
+        -- Admin only
         if not guild:getMember(player.id):hasRole(_G.roles.admin) then
             _G.log:print(msg.author.tag .. " doesn't have enough permission to register " .. newPlayer)
             msg:reply("Tu n'as pas les permissions suffisantes pour ajouter " .. newPlayer)

@@ -1,7 +1,7 @@
 local M = {
     all = {},
     available = {},
-    current = {}
+    current = nil
 }
 M.__index = M
 require('tools/copy')

@@ -16,7 +16,9 @@ _G.roles = {
     player = "563739379529547817"
 }
 _G.channels = {
-    challenge = "563852208932651010"
+    challenge = "563852208932651010",
+    bot = "564029644257361920",
+    test_bot = "563713704282030081"
 }
 
 -- Internal variables
@@ -44,13 +46,15 @@ client:once('ready', function()
         end
     end
 
-    _G.log:print('Logged in as '.. client.user.username .. " sur le serveur " .. client:getGuild(guildId).name)
+    _G.log:print('Logged in as '.. client.user.username .. " on server " .. client:getGuild(guildId).name)
     _G.log:print('Starting time events')
     clock:start()
 end)
 
 client:on('messageCreate', function(msg)    
-    if string.sub(msg.content, 0, #trigger) == trigger then
+    if string.sub(msg.content, 0, #trigger) == trigger and
+    (msg.channel.id == _G.channels.bot or 
+    msg.channel.id == _G.channels.test_bot) then
         local sep = string.find(msg.content, " ")
         if sep then sep = sep - 1 end
         local command = string.sub(msg.content, #trigger + 1, sep)

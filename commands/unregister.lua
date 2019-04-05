@@ -1,10 +1,12 @@
 _G.registerCommand({"unregister", "remove"}, function(msg, args)
     local guild = msg.guild
     local player = msg.author
+    local sameGuy = player.id == msg.author.id and true or false
 
     if #args > 0 then
         local oldPlayer = args[1]
 
+        -- Admin only
         if not guild:getMember(player.id):hasRole(_G.roles.admin) then
             _G.log:print(msg.author.tag .. " doesn't have enough permission to unregister " .. oldPlayer)
             msg:reply("Tu n'as pas les permissions suffisantes pour supprimer " .. oldPlayer)
@@ -22,7 +24,7 @@ _G.registerCommand({"unregister", "remove"}, function(msg, args)
 
     if not guild:getMember(player.id):hasRole(_G.roles.player) then
         _G.log:print(player.tag .. " doesn't have the role player", 2)
-        msg:reply(player.mentionString .. " n'a pas le rôle joueur !")
+        msg:reply((sameGuy and "Tu" or player.mentionString) .. " n'a" .. (sameGuy and "s" or "") .. " pas le rôle joueur !")
         return
     end
 
@@ -31,7 +33,6 @@ _G.registerCommand({"unregister", "remove"}, function(msg, args)
     local buffer = file:read("*a")
     local data = json.decode(buffer) or {}
     if not data.players then data.players = {} end
-    local sameGuy = player.id == msg.author.id and true or false
 
     -- Check for matching ID
     for i, obj in ipairs(data.players) do
@@ -44,6 +45,7 @@ _G.registerCommand({"unregister", "remove"}, function(msg, args)
     file:write(json.encode(data)) -- Rewrite using previous and new datas
     file:close()
     guild:getMember(player.id):removeRole(_G.roles.player)
+    guild:getMember(player.id):removeRole(_G.roles.grofuri)
 
     _G.log:print("Player \"" .. player.tag .. "\" with ID " .. player.id .. " has been removed")
     msg:reply((sameGuy and "Tu" or player.mentionString) .. " a" .. (sameGuy and "s" or "") .. " été supprimé de la liste des joueurs.")
