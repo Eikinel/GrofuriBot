@@ -58,8 +58,8 @@ client:on('messageCreate', function(msg)
 
         -- Execute the command if it exists
         if _G.commands[command] then
-            _G.commands[command](msg, args)
             _G.log:print(msg.author.tag .. " called function " .. command)
+            _G.commands[command](msg, args)
         else
             _G.log:print(msg.author.tag .. " : command " .. command .. " does not exist", 2)
 		end

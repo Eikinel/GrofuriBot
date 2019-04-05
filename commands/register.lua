@@ -45,4 +45,5 @@ _G.registerCommand({"register", "add"}, function(msg, args)
 
     msg:reply((sameGuy and "Tu" or player.mentionString) .. " a" .. (sameGuy and "s" or "") .. " bien été enregistré en tant que joueur de Grofuri. " ..
     "Pour plus d'informations, tape `%help`")
+    _G.log:print("Player \"" .. player.tag .. "\" with ID " .. player.id .. " is now a player")
 end)

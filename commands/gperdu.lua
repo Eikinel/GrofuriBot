@@ -1,3 +1,5 @@
+local history = require('tools/history')
+
 local function searchPlayerById(players, id)
     for i, player in ipairs(players) do
         if player.id == id then
@@ -29,6 +31,14 @@ _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
     local author = msg.author
     local filename = "players.json"
 
+    -- No challenge inbound
+    if not _G.challenge:getCurrent() then
+        _G.log:print("No challenge is running.", 2)
+        msg:reply("Il n'y a aucun challenge en cours. Reviens plus tard !")
+        return
+    end
+
+    -- The message author is not a player
     if not guild:getMember(author.id):hasRole(_G.roles.player) then
         _G.log:print(author.tag .. " doesn't have the player role")
         msg:reply("Tu n'as pas le rôle Joueur ! Pour t'enregistrer, tapes `%register`")
@@ -37,21 +47,31 @@ _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
 
     local file = io.open(filename, "a+")
     local data = json.decode(file:read("*a"))
+
+    -- Empty player file (should not happend)
+    if not data or not data.players then
+        _G.log:print("No players available (empty file)", 3)
+        msg:reply("Oups, une erreur est survenue, je vais vite prévenir " .. msg.client.owner.mentionString .. " !")
+        return
+    end
+
     local player = searchPlayerById(data.players, author.id)
 
     -- Add the lose to history
     if player then
         if not player.history then player.history = {} end -- Create empty history we'll fill
         if not hasAlreadyLost(player.history) then -- Don't duplicate data
-            table.insert(player.history, {date = os.date("%y/%m/%d"), win = false, challengeId = _G.challenge:getCurrent().id})
-            _G.log:print("Add lose at date " .. os.date("%y/%m/%d") .. " for player " .. author.name, 1)
+            local entry = history:new(history.today, false, _G.challenge:getCurrent().id)
+
+            table.insert(player.history, entry)
+            _G.log:print("Add lose at date " .. entry.date .. " for player " .. author.tag, 1)
         else
             msg:reply("Tu as déjà perdu, ce serait dommage d'être furry ET con...")
-            _G.log:print("Player " .. author.name .. " has already lost", 2)
+            _G.log:print("Player " .. author.tag .. " has already lost", 2)
             return
         end
     else
-        _G.log:print(player.name .. " with ID " .. player.id .. " is a player but don't have its id registered", 3)
+        _G.log:print(player.tag .. " with ID " .. player.id .. " is a player but don't have its id registered", 3)
         msg:reply("Oups, une erreur est survenue, je vais vite prévenir " .. msg.client.owner.mentionString .. " !")
         return
     end
