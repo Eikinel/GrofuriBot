@@ -1,8 +1,8 @@
 # Bot related files
 token.txt
 *.log
-credentials.json
-postman_auth_bot.json
+challenges.json
+players.json
 
 # Compiled Lua sources
 luac.out
