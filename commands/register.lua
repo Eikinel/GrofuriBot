@@ -6,7 +6,7 @@ _G.registerCommand({"register", "add"}, function(msg, args)
         local newPlayer = args[1]
 
         if not guild:getMember(player.id):hasRole(_G.roles.admin) then
-            _G.log:print(msg.author.tag .. " doesn't have enough permission to register " .. newPlayer))
+            _G.log:print(msg.author.tag .. " doesn't have enough permission to register " .. newPlayer)
             msg:reply("Tu n'as pas les permissions suffisantes pour ajouter " .. newPlayer)
             return
         else
@@ -41,6 +41,7 @@ _G.registerCommand({"register", "add"}, function(msg, args)
     io.open(filename, "w"):close() -- Flush file content
     file:write(json.encode(data)) -- Rewrite using previous and new datas
     file:close()
+    guild:getMember(player.id):addRole(_G.roles.player)
 
     msg:reply((sameGuy and "Tu" or player.mentionString) .. " a" .. (sameGuy and "s" or "") .. " bien été enregistré en tant que joueur de Grofuri. " ..
     "Pour plus d'informations, tape `%help`")
