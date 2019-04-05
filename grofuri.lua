@@ -3,6 +3,7 @@ _G.discordia = require('discordia')
 _G.log = require('log')
 _G.tools = require('tools')
 _G.embed = require('embed')
+_G.json = require('json')
 _G.commands = {}
 _G.colorChart = {
     default = 0xF02E89
@@ -11,9 +12,11 @@ _G.colorChart = {
 -- Internal variables
 local client = discordia.Client()
 local clock = discordia.Clock()
+local selector = require('select_challenge')
 local trigger = "%"
+local guildId = "422035277964378112"
 
-client:on('ready', function()
+client:once('ready', function()
     -- List all files in /commands
     local files = io.popen("ls commands","r")
 
@@ -33,6 +36,8 @@ client:on('ready', function()
     end
 
     _G.log:print('Logged in as '.. client.user.username)
+    _G.log:print('Starting clocktime events')
+    clock:start()
 end)
 
 client:on('messageCreate', function(msg)    
@@ -50,6 +55,40 @@ client:on('messageCreate', function(msg)
             _G.log:print(msg.author.tag .. " : command " .. command .. " does not exist", 2)
 		end
     end
+end)
+
+clock:on('hour', function()
+    local guild = client:getGuild(guildId)
+
+    if not guild then
+        _G.log:print("No guild matching requirements with id " .. guildId .. " found.")
+        return
+    end
+
+    -- Parse the appropriate JSON and select a challenge
+    _G.log:print("Selecting new challenge")
+    selector:parse()
+    selector:selectChallenge(os.time())
+
+    -- Construct new message to send to the guild
+    local author = client:getUser(selector.challenge.authorId)
+    local membed = embed.new()
+
+    membed:setColor(_G.colorChart.default)
+    membed:setAuthor("Nouveau challenge !", "", client.user:getAvatarURL())
+    membed:setThumbnail(author and author:getAvatarURL() or nil)
+    membed:setDescription("La challenge du jour est...")
+    membed:addField(
+        "Si tu " .. selector.challenge.title .. " aujourd'hui, tu es **furry** !",
+        selector.challenge.description)
+    membed:addField(
+        "Si vous avez perdu, pensez à utiliser la commande `%gperdu` pour enregistrer votre score de grofuri",
+        [[\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_]])
+    membed:setFooter("Proposé par " .. (author and author.tag or "Unknown"))
+    membed:setTimestamp(os.date("!%Y-%m-%dT%TZ"))
+
+    _G.log:print("Challenge n°" .. selector.challenge.id .. " sent to the guild \"" .. guild.name .. "\"")
+    guild.systemChannel:send({embed = membed})
 end)
 
 

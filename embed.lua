@@ -67,8 +67,8 @@ function embed:addField(name, value, inline)
     field.value = value
     field.inline = inline or false
 
-    if not self.fields then self.fields = {} end 
-    table.insert(self.fields, field)
+    if not self.fields then self.fields = {} end
+    self.fields[#self.fields + 1] = field
 end
 
 function embed:new(title)
