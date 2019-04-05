@@ -11,11 +11,12 @@ function M:selectChallenge(timestamp)
     end
 
     for i, event in ipairs(challenges.events) do
-        local yma = event.date:split("/")
-        local eventTimestamp = os.time({year=yma[1], month=yma[2], day=yma[3]})
-        local deltaTime = os.difftime(eventTimestamp, timestamp) / (24 * 60 * 60) -- seconds in a day
+        local now = os.date("*t")
+        local eventDate = event.date:split("/")
 
-        if math.floor(deltaTime) >= 0 and math.floor(deltaTime) <= 1 then
+        if tonumber(eventDate[1]) == now.year
+        and tonumber(eventDate[2]) == now.month
+        and tonumber(eventDate[3]) == now.day then
             self.challenge = event
             return
         end
