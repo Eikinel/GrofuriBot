@@ -8,14 +8,20 @@ _G.commands = {}
 _G.colorChart = {
     default = 0xF02E89
 }
+_G.roles = {
+    admin = "563731669912387625",
+    bot = "563710698979459072",
+    grofuri = "563739629795409961",
+    joueur = "563739379529547817"
+}
 
 -- Internal variables
-local client = discordia.Client()
+local client = discordia.Client({cacheAllMembers = true})
 local clock = discordia.Clock()
 local challenge = require('select_challenge')
 local trigger = "%"
-local guildId = "422035277964378112"
-local channelId = "432140075308941314"
+local guildId = "563708262369984522"
+local channelId = "563709792150093843"
 
 client:once('ready', function()
     -- List all files in /commands
@@ -36,7 +42,7 @@ client:once('ready', function()
         end
     end
 
-    _G.log:print('Logged in as '.. client.user.username)
+    _G.log:print('Logged in as '.. client.user.username .. " sur le serveur " .. client:getGuild(guildId).name)
     _G.log:print('Starting time events')
     clock:start()
 end)
