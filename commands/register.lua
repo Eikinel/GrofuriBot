@@ -2,23 +2,18 @@ _G.registerCommand({"register", "add"}, function(msg, args)
     local guild = msg.guild
     local player = msg.author
 
-    if #args > 0 then
-        local newPlayer = args[1]
+    if #msg.mentionedUsers > 0 then
+        mention = msg.mentionedUsers:toArray()[1]
 
         -- Admin only
-        if not guild:getMember(player.id):hasRole(_G.roles.admin) then
-            _G.log:print(msg.author.tag .. " doesn't have enough permission to register " .. newPlayer)
-            msg:reply("Tu n'as pas les permissions suffisantes pour ajouter " .. newPlayer)
+        if not guild:getMember(msg.author.id):hasRole(_G.roles.admin) and mention.id ~= msg.author.id then
+            _G.log:print(msg.author.tag .. " doesn't have enough permission to register " .. mention.mentionString)
+            msg:reply("Tu n'as pas les permissions suffisantes pour ajouter " .. mention.mentionString)
             return
-        else
-            if #msg.mentionedUsers > 0 then
-                player = msg.mentionedUsers:toArray()[1]
-            else
-                _G.log:print(newPlayer .. " is not a valid argument", 2)
-                msg:reply(newPlayer .. " n'est pas un argument valide")
-                return
-            end
         end
+
+        player = mention
+        sameGuy = player.id == msg.author.id
     end
 
     local filename = "players.json"
