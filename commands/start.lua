@@ -8,6 +8,7 @@ _G.registerCommand({"start"}, function(msg, args)
         -- Check for permissions
         if not guild:getMember(msg.author.id):hasRole(_G.roles.admin) then
             _G.log:print(msg.author.tag .. " attempted to start a challenge", 2)
+            msg:reply("Tu n'as pas les permissions suffisantes pour démarrer un challenge")
             return
         end
     end

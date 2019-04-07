@@ -11,8 +11,8 @@ _G.registerCommand({"help", "man"}, function(msg)
 **%help, %man** : affiche cette bulle d'aide
 **%register, %add USER** : intègre USER à la liste des participants au jeu du Grofuri
 **%unregister, %remove USER** : supprime USER de la liste des participants au jeu du Grofuri
-**%gperdu**     : enregistre une défaite pour ce jour
-**%display, %show USER [-dwmy, --in-pixel]** : affiche le challenge des X derniers jours avec l'état de la victoire de USER
+**%gperdu** : enregistre une défaite pour ce jour
+**%display, %show [USER1, ...] [-dwmy, --in-pixel]** : affiche le challenge des X derniers jours avec l'état de la victoire de(s) USER(S)
         
     *__OPTIONS__*:
 
