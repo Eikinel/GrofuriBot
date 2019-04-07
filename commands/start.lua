@@ -1,6 +1,7 @@
-_G.registerCommand({"start"}, function(msg)
+_G.registerCommand({"start"}, function(msg, args)
     local client = msg.client or msg
     local guild = client:getGuild(_G.guildId)
+    local challengeId = nil
 
     -- Check if it's a message
     if msg.author then
@@ -23,11 +24,14 @@ _G.registerCommand({"start"}, function(msg)
         return
     end
 
-    -- Reset grofuri roles for every players
-    for _, player in pairs(guild.members) do
-        if not player.user.bot and player:hasRole(_G.roles.grofuri) then
-            player:removeRole(_G.roles.grofuri)
-            _G.log:print("Flush role grofuri for player " .. player.tag)
+    -- If it's a message and args are passed, select challenge by this ID
+    if #args > 0 then
+        challengeId = tonumber(args[1])
+        
+        if not challengeId then
+            _G.print:log(args[1] .. " is not a number.", 2)
+            msg:reply(args[1] .. " n'est pas un nombre.")
+            return
         end
     end
 
@@ -36,15 +40,30 @@ _G.registerCommand({"start"}, function(msg)
 
     _G.log:print("Selecting new challenge")
     if not challenge:parse(challengeFile) then return end
-    if not challenge:selectChallenge(os.time()) then
-        channel:send("Oops, je n'ai plus de challenge à vous proposez ! Donnez-moi de quoi vous challenger !")
+    if not challenge:selectChallenge(challengeId) then
+        local error = "Oops, je n'ai plus de challenge à vous proposer ! Donnez-moi de quoi vous challenger !"
+
+        -- Answer either on the challenge channel or directly to the person who called the %start command
+        if msg.client then
+            msg:reply(error)
+        else
+            channel:send(error)
+        end
+
         return
     end
 
     challenge:update(challengeFile)
-    _G.log:print("Updated file " .. challengeFile)
-    -- Construct new message to send to the guild
 
+    -- Reset grofuri roles for every players
+    for _, player in pairs(guild.members) do
+        if not player.user.bot and player:hasRole(_G.roles.grofuri) then
+            player:removeRole(_G.roles.grofuri)
+            _G.log:print("Flush role grofuri for player " .. player.tag)
+        end
+    end
+
+    -- Construct new message to send to the guild
     local current = challenge:getCurrent()
     local author = client:getUser(current.authorId)
     local membed = embed.new()

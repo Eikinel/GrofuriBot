@@ -20,7 +20,7 @@ end
 
 local function hasAlreadyLost(history)
     for _, v in ipairs(history) do
-        if v.date == os.date("%y/%m/%d") then return true end
+        if v.date == os.date("%Y/%m/%d") then return true end
     end
 
     return false

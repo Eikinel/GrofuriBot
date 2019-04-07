@@ -16,10 +16,16 @@ function M:parse(filepath)
 
     local buffer = file:read("*a")
     self.all = json.parse(buffer)
-    self.available = json.parse(buffer) -- Duplicate all challenge to keep trace of the file's first state
+    self.available = copy(self.all) -- Duplicate all challenge to keep trace of the file's first state
     file:close()
     
+    if not self.all then
+        _G.log:print("challenges.json exists but is empty", 3)
+        return
+    end
+
     -- Remove done challenges to keep only available ones
+    if not self.all.done then self.all.done = {} end
     for _, id in ipairs(self.all.done) do
         for i, chall in ipairs(self.available.standard) do
             if id == chall.id then
@@ -31,7 +37,7 @@ function M:parse(filepath)
     return true
 end
 
-function M:selectChallenge(timestamp)
+function M:selectChallenge(challengeId)
     if not self.available then
         _G.log:print("There's no challenge at all. Did you call parse() before selecting a challenge ?")
         return nil
@@ -49,19 +55,42 @@ function M:selectChallenge(timestamp)
         end
     end
 
-    if #self.available.standard == 0 then
-        _G.log:print("No challenge left. Fill my JSON with content to continue challenging !", 2)
+    if not challengeId and #self.available.standard == 0 then
+        _G.log:print("No challenge left. Fill the JSON with content to continue challenging.", 2)
         return nil
     end
 
     -- Pseudo randomize using seed before returning random challenge
     math.randomseed(os.time())
-    self.current = copy(self.available.standard[math.random(#self.available.standard)])
+
+    -- Check if challengeId is valid
+    if challengeId then
+        -- Pick a challenge between *all* challenges
+        if not self.all.standard[challengeId] then
+            _G.log:print("Standard challenge with ID " .. challengeId .. " doesn't exist", 3)
+            return
+        end
+
+        self.current = copy(self.all.standard[challengeId])
+    else
+        challengeId = math.random(#self.available.standard)
+        self.current = copy(self.available.standard[challengeId])
+    end
+
+    _G.log:print("Challenge n°" .. self.current.id .. " selected", 1)
 
     return true
 end
 
 function M:update(filepath)
+    -- No need to update if the id is already in the array
+    -- This can happen if the admin manually start a challenge using an ID
+    for _, id in ipairs(self.all.done) do
+        if id == self.current.id then
+            return
+        end
+    end
+   
     table.insert(self.all.done, self.current.id)
 
     local updated = json.encode(self.all)
@@ -69,14 +98,11 @@ function M:update(filepath)
 
     file:write(updated)
     file:close()
+    _G.log:print("Updated file " .. filepath)
 
     -- Flush previously read challenges
     self.all = {}
     self.available = {}
-end
-
-function M:getAvailable()
-    return self.available
 end
 
 function M:getCurrent()
