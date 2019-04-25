@@ -1,10 +1,11 @@
+require('tools/copy')
+
 local M = {
     all = {},
     available = {},
     current = nil
 }
 M.__index = M
-require('tools/copy')
 
 function M:parse(filepath)
     local file = io.open(filepath, "r")

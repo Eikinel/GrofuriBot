@@ -21,15 +21,18 @@ function options:getOptions()
     return self.options
 end
 
+function options:getState(pos)
+    return pos and self.state[pos] or self.state
+end
+
 function options:new(...)
     local t = {}
     t.options = {}
-    t.values = {}
 
     -- Fill options with default values
     for _, option in ipairs({...}) do
         t.options[#t.options + 1] = option
-        t.values[#t.values + 1] = false
+        t.state[#t.state + 1] = false
     end
 
     return setmetatable(t, options)

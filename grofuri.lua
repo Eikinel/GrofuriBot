@@ -1,8 +1,6 @@
 -- Add discordia and various variables to the global scope
 _G.discordia = require('discordia')
 _G.log = require('tools/log')
-_G.split = require('tools/split')
-_G.embed = require('tools/embed')
 _G.json = require('json')
 _G.challenge = require('select_challenge')
 _G.commands = {}
@@ -23,6 +21,7 @@ _G.channels = {
 _G.guildId = "563708262369984522"
 
 -- Internal variables
+require('tools/split')
 local client = discordia.Client({cacheAllMembers = true})
 local clock = discordia.Clock()
 local trigger = "%"

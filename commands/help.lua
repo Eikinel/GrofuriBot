@@ -1,3 +1,5 @@
+require('tools/embed')
+
 _G.registerCommand({"help", "man"}, function(msg)
     membed = embed:new()
 

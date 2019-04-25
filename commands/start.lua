@@ -1,3 +1,5 @@
+require('tools/embed')
+
 _G.registerCommand({"start"}, function(msg, args)
     local client = msg.client or msg
     local guild = client:getGuild(_G.guildId)
