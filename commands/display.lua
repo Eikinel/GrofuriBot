@@ -20,51 +20,31 @@ _G.registerCommand({"display", "show"}, function(msg, args)
         { "-y", "--year" }, 
         { "--in-pixel" }
     )
-    local xor = function(a, b)
-        a = btoi(a)
-        b = btoi(b)
-        return itob(a + b - 2 * a * b)
-    end
 
     args = options.splitArgs(args)
     showTable(args)
 
     -- Loop on arguments, get the option and set it appropriately
-    for _, arg in ipairs(args) do
-        -- Loop on options
-        for i, opts in ipairs(options:getOptions()) do
-            -- Loop on aliases of current option
-            for _, opt in ipairs(opts) do
-                if opt == arg then
-                    options:getState(i) = true
-                    -- Break the for loop because we reached the correct alias
-                    break
-                end
-            end
-        end
+    for i, arg in ipairs(args) do
+        -- Get table as key and option value (elipsed here)
+        local t, _ = options:getOption(arg.arg)
+
+        -- Set the option to true with specified value, if it exists
+        if t then options:setOption(t, true, arg.value) end
     end
 
     print()
-    showTable(options:getState())
+    showTable(options)
 
-    local values = options:getState()
-    local opts = options:getOptions()
+    local keys = options:getKeys()
     local now = os.date("*t")
     local start = os.time()
-    -- Substract x days from start depending on year/month/week/day
-    local ending = os.difftime(start, os.time({
-        year = now.year - btoi(values[opts[4]]),
-        month = now.month - btoi(values[opts[3]]),
-        day = now.day - btoi(values[opts[2]]) * 7 - btoi(values[opts[1]])
-    }))
+    local ending = start
 
-    print (now.year - btoi(values[opts[4]]))
-    print (now.month - btoi(values[opts[3]]))
-    print (now.day - btoi(values[opts[2]]) * 7 - btoi(values[opts[1]]))
-
-    print()
-    showTable(os.date("*t", start))
-    showTable(os.date("*t", ending))
+    -- From "--year" to "--day"
+    for i = #keys - 1, 1, -1 do
+        local t, v = options:getOption(key[i][1])
+    end
 
     local histories = history.findByPeriod("players.json", msg.author.id, start, ending)
     print()

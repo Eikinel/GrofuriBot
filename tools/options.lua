@@ -2,14 +2,19 @@ local options = {}
 options.__index = options
 
 function options.splitArgs(args)
-    t = {}
+    local t = {}
 
     for _, arg in ipairs(args) do
-        if arg:match("%-%-%a+") then
-            t[#t + 1] = arg
-        elseif arg:match("%-%a+") then
+        local key, value = arg:match("(%-%-%a+)(=%w+)")
+
+        if key then
+            t[#t + 1] = {}
+            t[#t].arg = key
+            t[#t].value = value:sub(2, #value)
+        elseif arg:match("%-%a+$") then
             for n = 2, #arg do
-                t[#t + 1] = "-" .. arg:sub(n, n)
+                t[#t + 1] = {}
+                t[#t].arg = arg
             end
         end
     end
@@ -17,22 +22,43 @@ function options.splitArgs(args)
     return t
 end
 
+function options:getKeys()
+    return self.keys
+end
+
 function options:getOptions()
     return self.options
 end
 
-function options:getState(pos)
-    return pos and self.state[pos] or self.state
+function options:getOption(key)
+    -- Loop inside "keys" table, that contains the different options aliases
+    -- Because aliases are used as a table key (i.e {"-j", "--jaj"} is a key), we have to retrieve the table adress through "keys" table
+    for _, t in ipairs(self.keys) do
+        -- Current state is ipairs(t.keys) = {[0] = table 0xJAJ, [1] = table 0xWHU}
+        for _, v in ipairs(t) do
+            -- Current state is ipairs(t) = {[0] = "-shortoption", [1] = "--longoption"}
+            -- Returns the corresponding table, using table as key
+            if v == key then return t, self.options[t] end
+        end
+    end
+end
+
+function options:setOption(key, ...)
+    local t = {}
+
+    -- true/false, value
+    self.options[key] = {...}
 end
 
 function options:new(...)
     local t = {}
     t.options = {}
+    t.keys = {}
 
     -- Fill options with default values
-    for _, option in ipairs({...}) do
-        t.options[#t.options + 1] = option
-        t.state[#t.state + 1] = false
+    for _, options in ipairs({...}) do
+        t.keys[#t.keys + 1] = options -- Keep trace of original option table
+        t.options[t.keys[#t.keys]] = { false, nil } -- Table as key value
     end
 
     return setmetatable(t, options)
