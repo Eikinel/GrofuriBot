@@ -23,8 +23,7 @@ _G.registerCommand({"unregister", "remove"}, function(msg, args)
         return
     end
 
-    local filename = "players.json"
-    local file = io.open(filename, "a+")
+    local file = io.open(_G.conf.playersFile, "a+")
     local buffer = file:read("*a")
     local data = json.decode(buffer) or {}
     if not data.players then data.players = {} end
@@ -36,7 +35,7 @@ _G.registerCommand({"unregister", "remove"}, function(msg, args)
         end
     end
 
-    io.open(filename, "w"):close() -- Flush file content
+    io.open(_G.conf.playersFile, "w"):close() -- Flush file content
     file:write(json.encode(data)) -- Rewrite using previous and new datas
     file:close()
     guild:getMember(player.id):removeRole(_G.roles.player)

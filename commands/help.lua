@@ -19,10 +19,9 @@ _G.registerCommand({"help", "man"}, function(msg)
     *__OPTIONS__*:
 
     **-d, --day=YY/MM/DD**  : renvoie le challenge du jour actuel ou celui spécifié en argument
-    **-w, --week=[1-52]**   : renvoie les challenges de la semaine actuelle ou celle spécifiée en argument
     **-m, --month=[1-12]**  : renvoie les challenges du mois actuel ou celui spécifié en argument
-    **-y, --year=YY**       : renvoie les challenges de l'année actuelle ou celle spécifiée en argument
-    **--in-pixel**          : affiche la/les victoire(s) sous forme de carrés de couleurs 
+    **-y, --year=YYYY**       : renvoie les challenges de l'année actuelle ou celle spécifiée en argument
+    **--in-pixel**          : affiche le résultat des challenges sous forme de carrés de couleurs 
 ]])
 
     msg.author:send({embed = membed})

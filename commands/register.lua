@@ -16,8 +16,7 @@ _G.registerCommand({"register", "add"}, function(msg, args)
         sameGuy = player.id == msg.author.id
     end
 
-    local filename = "players.json"
-    local file = io.open(filename, "a+")
+    local file = io.open(_G.conf.playersFile, "a+")
     local buffer = file:read("*a")
     local data = json.decode(buffer) or {}
     if not data.players then data.players = {} end
@@ -33,8 +32,8 @@ _G.registerCommand({"register", "add"}, function(msg, args)
         end
     end
 
-    table.insert(data.players, {id = player.id})
-    io.open(filename, "w"):close() -- Flush file content
+    table.insert(data.players, {id = player.id, history = {}})
+    io.open(_G.conf.playersFile, "w"):close() -- Flush file content
     file:write(json.encode(data)) -- Rewrite using previous and new datas
     file:close()
     guild:getMember(player.id):addRole(_G.roles.player)

@@ -5,16 +5,18 @@ function options.splitArgs(args)
     local t = {}
 
     for _, arg in ipairs(args) do
-        local key, value = arg:match("(%-%-%a+)(=%w+)")
+        local key = arg:match("^(%-%-%a+)")
 
         if key then
+            local value = arg:match("(=%w+)$")
+
             t[#t + 1] = {}
             t[#t].arg = key
-            t[#t].value = value:sub(2, #value)
+            t[#t].value = value and value:sub(2, #value) or nil
         elseif arg:match("%-%a+$") then
             for n = 2, #arg do
                 t[#t + 1] = {}
-                t[#t].arg = arg
+                t[#t].arg = "-" .. arg:sub(n, n)
             end
         end
     end

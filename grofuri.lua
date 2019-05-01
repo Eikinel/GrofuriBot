@@ -2,7 +2,7 @@
 _G.discordia = require('discordia')
 _G.log = require('tools/log')
 _G.json = require('json')
-_G.challenge = require('select_challenge')
+_G.challenge = require('challenge')
 _G.commands = {}
 _G.colorChart = {
     default = 0xF02E89
@@ -19,6 +19,11 @@ _G.channels = {
     test_bot = "563713704282030081"
 }
 _G.guildId = "563708262369984522"
+_G.conf = {
+    playersFile = "players.json",
+    challengesFile = "challenges.json",
+    gotchaFile = "gotcha.json"
+}
 
 -- Internal variables
 require('tools/split')

@@ -1,4 +1,5 @@
 require('tools/copy')
+require("tools/show_table")
 
 local M = {
     all = {},
@@ -108,6 +109,20 @@ end
 
 function M:getCurrent()
     return self.current
+end
+
+function M:getChallengeById(id)
+    local file = io.open(_G.conf.challengesFile, "r")
+    local buffer = file:read("*a")
+    local all = json.parse(buffer)
+
+    file:close()
+
+    for _, challenge in ipairs(all.standard) do
+        if challenge.id == id then
+            return challenge 
+        end
+    end
 end
 
 return M

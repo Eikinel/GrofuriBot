@@ -20,7 +20,7 @@ end
 
 local function hasAlreadyLost(history)
     for _, v in ipairs(history) do
-        if v.date == os.date("%Y/%m/%d") then return true end
+        if v.date == os.date(history.dateFormat) then return true end
     end
 
     return false
@@ -29,7 +29,6 @@ end
 _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
     local guild = msg.guild
     local author = msg.author
-    local filename = "players.json"
 
     -- No challenge inbound
     if not _G.challenge:getCurrent() then
@@ -45,7 +44,7 @@ _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
         return
     end
 
-    local file = io.open(filename, "a+")
+    local file = io.open(_G.conf.playersFile, "a+")
     local data = json.decode(file:read("*a"))
 
     -- Empty player file (should not happend)
@@ -61,7 +60,7 @@ _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
     if player then
         if not player.history then player.history = {} end -- Create empty history we'll fill
         if not hasAlreadyLost(player.history) then -- Don't duplicate data
-            local entry = history:new(history.today, false, _G.challenge:getCurrent().id)
+            local entry = history:new(os.date(history.dateFormat), false, _G.challenge:getCurrent().id)
 
             table.insert(player.history, entry)
             _G.log:print("Add lose at date " .. entry.date .. " for player " .. author.tag, 1)
@@ -76,7 +75,7 @@ _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
         return
     end
 
-    io.open(filename, "w"):close() -- Flush file content
+    io.open(_G.conf.playersFile, "w"):close() -- Flush file content
     file:write(json.encode(data)) -- Rewrite using previous and new data
     file:close()
     guild:getMember(author.id):addRole(_G.roles.grofuri)
@@ -90,7 +89,7 @@ _G.registerCommand({"gperdu", "perdu", "jeu", "lejeu"}, function(msg, args)
     data = json.decode(file:read("*a"))
 
     if #data == 0 then
-        _G.log:print("Empty array found in " .. filename .. ". Default sentence will be used", 2)
+        _G.log:print("Empty array found in " .. _G.conf.playersFile .. ". Default sentence will be used", 2)
         msg:reply("Gott'em !")
     else
         math.randomseed(os.time())

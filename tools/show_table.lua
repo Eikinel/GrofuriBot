@@ -1,7 +1,7 @@
 function showTable(table, n)
     if type(table) ~= "table" then return end
     if not n then
-        print("Content of table")
+        print("\nContent of table")
         n = 0
     end
 
