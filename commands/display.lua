@@ -54,7 +54,7 @@ _G.registerCommand({"display", "show"}, function(msg, args)
     local start = os.time({
         year = xyear[2] or now.year,
         month = xyear[1] and 1 or xmonth[2] or now.month,
-        day = xday[2] or now.day, 
+        day = xyear[1] and 1 or xday[2] or now.day, 
         hour = 0, min = 0, sec = 0
     })
     local startDate = os.date("*t", start)
