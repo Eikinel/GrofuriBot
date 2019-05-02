@@ -2,6 +2,43 @@ local history = {}
 history.__index = history
 history.dateFormat = "%Y/%m/%d"
 
+function history.searchPlayerById(players, id)
+    for i, player in ipairs(players) do
+        if player.id == id then
+            return player
+        end
+    end
+end
+
+function history.hasAlreadyPlayed(history, date)
+    for _, v in ipairs(history) do
+        if v.date == date then return true end
+    end
+
+    return false
+end
+
+function history.addToHistory(player, date, win, challengeId)
+    -- Use player's data from players.json and add the win event to history
+    if player then
+        if not player.history then player.history = {} end -- Create empty history we'll fill
+        if not history.hasAlreadyPlayed(player.history, date) then -- Don't duplicate data
+            local entry = history:new(date, win, challengeId)
+
+            table.insert(player.history, entry)
+            _G.log:print("Add " .. (win and "win" or "lose") .. " at date " .. entry.date .. " for player " .. player.id)
+        else
+            _G.log:print("Player " .. player.id .. " has already played", 2)
+            return -1
+        end
+    else
+        _G.log:print("Player with ID " .. player.id .. " is a player but don't have its id registered", 3)
+        return nil
+    end
+
+    return 1
+end
+
 function history.fromDateFormatToTime(date)
     local yy, mm, dd = date:match("(%d+)/(%d+)/(%d+)")
 

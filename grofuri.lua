@@ -29,6 +29,7 @@ _G.conf = {
 require('tools/split')
 local client = discordia.Client({cacheAllMembers = true})
 local clock = discordia.Clock()
+local history = require('tools/history')
 local trigger = "%"
 
 client:once('ready', function()
@@ -57,7 +58,7 @@ end)
 
 client:on('messageCreate', function(msg)    
     if string.sub(msg.content, 0, #trigger) == trigger and
-    (msg.channel.id == _G.channels.bot or 
+    (msg.channel.id == _G.channels.bot or
     msg.channel.id == _G.channels.test_bot) then
         local sep = string.find(msg.content, " ")
         if sep then sep = sep - 1 end
@@ -79,6 +80,26 @@ clock:on('hour', function()
 
     -- Delivers new challenge everyday at midnight
     if (now.hour == 0) and _G.commands["start"] then
+        local file = io.open(_G.conf.playersFile, "a+")
+        local data = json.decode(file:read("*a"))
+
+        -- Empty player file (should not happend)
+        if not data or not data.players then
+            _G.log:print("No players available (empty file)", 3)
+            return
+        end
+
+        for _, playerData in ipairs(data.players) do
+            local player = history.searchPlayerById(data.players, playerData.id)
+
+            -- Goes 1 hour back to add the win to history for yesterday's challenge
+            history.addToHistory(player, os.date(history.dateFormat, os.time() - 60 * 60), true, _G.challenge:getCurrent().id)
+        end
+
+        io.open(_G.conf.playersFile, "w"):close() -- Flush file content
+        file:write(json.encode(data)) -- Rewrite using previous and new data
+        file:close()
+
         _G.commands["start"](client)
     else
         _G.log:print("H-" .. 25 - (now.hour + 1) .. " before starting a new challenge")

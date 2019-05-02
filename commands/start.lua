@@ -28,7 +28,7 @@ _G.registerCommand({"start"}, function(msg, args)
     end
 
     -- If it's a message and args are passed, select challenge by this ID
-    if #args > 0 then
+    if args and #args > 0 then
         challengeId = tonumber(args[1])
         
         if not challengeId then
@@ -39,10 +39,8 @@ _G.registerCommand({"start"}, function(msg, args)
     end
 
     -- Parse the appropriate JSON and select a challenge
-    local challengeFile = "challenges.json"
-
     _G.log:print("Selecting new challenge")
-    if not challenge:parse(challengeFile) then return end
+    if not challenge:parse(_G.conf.challengesFile) then return end
     if not challenge:selectChallenge(challengeId) then
         local error = "Oops, je n'ai plus de challenge à vous proposer ! Donnez-moi de quoi vous challenger !"
 
@@ -56,13 +54,15 @@ _G.registerCommand({"start"}, function(msg, args)
         return
     end
 
-    challenge:update(challengeFile)
+    challenge:update(_G.conf.challengesFile)
 
     -- Reset grofuri roles for every players
     for _, player in pairs(guild.members) do
-        if not player.user.bot and player:hasRole(_G.roles.grofuri) then
-            player:removeRole(_G.roles.grofuri)
-            _G.log:print("Flush role grofuri for player " .. player.tag)
+        if not player.user.bot then
+            if player:hasRole(_G.roles.grofuri) then
+                player:removeRole(_G.roles.grofuri)
+                _G.log:print("Flush role grofuri for player " .. player.tag)
+            end
         end
     end
 
@@ -79,7 +79,7 @@ _G.registerCommand({"start"}, function(msg, args)
         "Si tu __**" .. current.title .. "**__ aujourd'hui, tu es *furry* !",
         current.description)
     membed:addField(
-        "Si vous avez perdu, pensez à utiliser la commande `%gperdu` pour enregistrer votre score de grofuri",
+        "Si vous avez perdu, pensez à utiliser la commande `%gperdu` pour enregistrer votre score de grofuri",]]--
         [[\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_]])
     membed:setFooter("Proposé par " .. (author and author.tag or "Unknown"))
     membed:setTimestamp(os.date("!%Y-%m-%dT%TZ"))
