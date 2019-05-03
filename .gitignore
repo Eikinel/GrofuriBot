@@ -3,6 +3,7 @@ token.txt
 *.log
 challenges.json
 players.json
+gotcha.json
 
 # Compiled Lua sources
 luac.out
