@@ -18,7 +18,7 @@ _G.registerCommand({"help", "man"}, function(msg)
         
     *__OPTIONS__*:
 
-    **-d, --day=YY/MM/DD**  : renvoie le challenge du jour actuel ou celui spécifié en argument
+    **-d, --day=[1-31]**  : renvoie le challenge du jour actuel ou celui spécifié en argument
     **-m, --month=[1-12]**  : renvoie les challenges du mois actuel ou celui spécifié en argument
     **-y, --year=YYYY**       : renvoie les challenges de l'année actuelle ou celle spécifiée en argument
     **--in-pixel**          : affiche le résultat des challenges sous forme de carrés de couleurs 
