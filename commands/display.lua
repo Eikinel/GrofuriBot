@@ -15,7 +15,7 @@ _G.registerCommand({"display", "show"}, function(msg, args)
     local options = opt:new(
         { "-d", "--day" },
         { "-m", "--month" },
-        { "-y", "--year" }, 
+        { "-y", "--year" },
         { "--in-pixel" }
     )
 

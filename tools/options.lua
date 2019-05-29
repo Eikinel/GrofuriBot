@@ -4,15 +4,21 @@ options.__index = options
 function options.splitArgs(args)
     local t = {}
 
-    for _, arg in ipairs(args) do
-        local key = arg:match("^(%-%-%a+)")
+    for i, arg in ipairs(args) do
+        local key = arg:match("^(%-%-[%a-]+)")
 
         if key then
-            local value = arg:match("(=%w+)$")
+            -- Get next arg as value temporarily, if exists
+            local value = #args <= i and args[i + 1] or nil
+            local isarg = nil
+
+            -- Double check tmp value to check if it does not match argument format
+            -- It can be bypassed by wrapping text between quotes (i.e --arg "--value")
+            if value then isarg = value:match("^(%-%-%a+)") or value:match("%-%a+$") end
 
             t[#t + 1] = {}
             t[#t].arg = key
-            t[#t].value = value and value:sub(2, #value) or nil
+            t[#t].value = (value and not isarg) and value or nil
         elseif arg:match("%-%a+$") then
             for n = 2, #arg do
                 t[#t + 1] = {}

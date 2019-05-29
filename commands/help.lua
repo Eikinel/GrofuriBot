@@ -14,14 +14,14 @@ _G.registerCommand({"help", "man"}, function(msg)
 **%register, %add USER** : intègre USER à la liste des participants au jeu du Grofuri
 **%unregister, %remove USER** : supprime USER de la liste des participants au jeu du Grofuri
 **%gperdu** : enregistre une défaite pour ce jour
+**%suggest, %suggestion [-t, --title] "TITLE" [-d, --description] "DESCRIPTION" : propose un nouveau challenge avec réaction en guise de vote
 **%display, %show [USER1, ...] [-dwmy, --in-pixel]** : affiche le challenge des X derniers jours avec l'état de la victoire de(s) USER(S)
         
     *__OPTIONS__*:
 
-    **-d, --day=[1-31]**  : renvoie le challenge du jour actuel ou celui spécifié en argument
-    **-m, --month=[1-12]**  : renvoie les challenges du mois actuel ou celui spécifié en argument
-    **-y, --year=YYYY**       : renvoie les challenges de l'année actuelle ou celle spécifiée en argument
-    **--in-pixel**          : affiche le résultat des challenges sous forme de carrés de couleurs (pas encore implémenté)
+    **-d, --day [1-31]**  : renvoie le challenge du jour actuel ou celui spécifié en argument
+    **-m, --month [1-12]**  : renvoie les challenges du mois actuel ou celui spécifié en argument
+    **-y, --year YYYY**       : renvoie les challenges de l'année actuelle ou celle spécifiée en argument
 ]])
 
     msg.author:send({embed = membed})

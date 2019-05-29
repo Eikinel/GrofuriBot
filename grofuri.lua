@@ -63,7 +63,7 @@ client:on('messageCreate', function(msg)
         local sep = string.find(msg.content, " ")
         if sep then sep = sep - 1 end
         local command = string.sub(msg.content, #trigger + 1, sep)
-        local args = string.sub(msg.content, #trigger + #command + 2):split(" ")
+        local args = string.sub(msg.content, #trigger + #command + 2):split(" ", true) -- true preserves quotes
 
         -- Execute the command if it exists
         if _G.commands[command] then
