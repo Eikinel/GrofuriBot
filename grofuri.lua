@@ -95,7 +95,7 @@ client:on('reactionAdd', function(reaction, userId)
             local nplayers = guild.members:count(function(m) if m:hasRole(_G.roles.player) then return m end end)
 
             -- Add challenge to the JSON if more than 50% of players agree
-            if agree.count > 1 then --math.ceil(nplayers / 2) then
+            if agree.count > math.ceil(nplayers / 2) then
                 if not _G.challenge:parse(_G.conf.challengesFile) then return end
                 local challId = #_G.challenge.all.standard + 1
 
@@ -107,9 +107,9 @@ client:on('reactionAdd', function(reaction, userId)
                         authorId = pending.authorId
                     }
                 )
-                print(title, description, challId, pending.authorId)
                 _G.challenge:update(_G.conf.challengesFile)
-                _G.log:print("Added challenge n°" .. challId .. " with title " .. title .. " and description " .. description)
+                _G.log:print("Added challenge n°" .. challId .. " with title \"" .. title .. "\" and description \"" .. description .. "\"")
+                pending.message:unpin()
             end
         end
     end

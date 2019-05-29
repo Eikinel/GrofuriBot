@@ -9,7 +9,9 @@ function string:split(sep, prsvquotes)
 
     -- Capture every words that does not contain the breaking character
     for word in self:gmatch("([^".. sep .."]+)") do
-        if prsvquotes and word:find("\"") then
+        -- Toggle "in quote" mode if the word contains one quote.
+        -- If this word is between two quotes, then it's just a word and not a sentence : just add it like any other words
+        if prsvquotes and word:find("\"") and not word:match("\".+\"") then
             if inquote then tmpword = tmpword .. " " .. word end
             inquote = not inquote
         end
@@ -17,7 +19,7 @@ function string:split(sep, prsvquotes)
         if inquote and self:find("\"", len + 1) then
             tmpword = tmpword .. (tmpword == "" and "" or " ") .. word
         else
-            table.insert(words, tmpword == "" and word or tmpword:gsub("\"", ""))
+            words[#words + 1] = tmpword == "" and word:gsub("\"", "") or tmpword:gsub("\"", "")
             tmpword = ""
         end
 

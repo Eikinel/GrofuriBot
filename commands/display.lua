@@ -1,4 +1,4 @@
-local opt = require("tools/options")
+--[[local opt = require("tools/options")
 local history = require("tools/history")
 require("tools/show_table")
 require('tools/embed')
@@ -19,8 +19,7 @@ _G.registerCommand({"display", "show"}, function(msg, args)
         { "--in-pixel" }
     )
 
-    args = options.splitArgs(args)
-    showTable(args)
+    options:splitArgs(args)
 
     if args == {} then
         _G.log:print("No argument provided", 2)
@@ -95,4 +94,4 @@ _G.registerCommand({"display", "show"}, function(msg, args)
     end
 
     _G.log:print("Results sent")
-end)
+end)--]]

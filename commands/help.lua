@@ -14,7 +14,7 @@ _G.registerCommand({"help", "man"}, function(msg)
 **%register, %add USER** : intègre USER à la liste des participants au jeu du Grofuri
 **%unregister, %remove USER** : supprime USER de la liste des participants au jeu du Grofuri
 **%gperdu** : enregistre une défaite pour ce jour
-**%suggest, %suggestion [-t, --title] "TITLE" [-d, --description] "DESCRIPTION" : propose un nouveau challenge avec réaction en guise de vote
+**%suggest, %suggestion --title "TITLE" --description "DESCRIPTION" : propose un nouveau challenge avec réaction en guise de vote
 **%display, %show [USER1, ...] [-dwmy, --in-pixel]** : affiche le challenge des X derniers jours avec l'état de la victoire de(s) USER(S)
         
     *__OPTIONS__*:

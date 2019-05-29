@@ -19,6 +19,7 @@ function options:splitArgs(args)
             self.options[t].arg = key
             self.options[t].value = (value and isarg == nil) and value or nil
         elseif arg:match("%-%a+$") then
+            key = arg:match("%-%a+$")
             local t = self:getTableKey(key)
 
             for n = 2, #arg do

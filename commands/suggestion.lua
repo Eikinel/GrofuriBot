@@ -6,14 +6,11 @@ _G.registerCommand({"suggestion", "suggest"}, function(msg, args)
     local client = msg.client
     local guild = client:getGuild(_G.guildId)
     local options = opt:new(
-        { "-t", "--title" },
-        { "-d", "--description" })
-
-    showTable(args)
+        { "--title" },
+        { "--description" }
+    )
 
     options:splitArgs(args)
-
-    showTable(options)
 
     if args == {} then
         _G.log:print("No argument provided", 2)
@@ -42,7 +39,7 @@ _G.registerCommand({"suggestion", "suggest"}, function(msg, args)
     })
 
     _G.challenge:addPending(newmsg, msg.author.id, options)
-    --newmsg:pin()
+    newmsg:pin()
     newmsg:addReaction("✅")
     newmsg:addReaction("❌")
 end)
