@@ -28,25 +28,10 @@ _G.registerCommand({"display", "show"}, function(msg, args)
         return
     end
 
-    -- Loop on arguments, get the option and set it appropriately
-    for i, arg in ipairs(args) do
-        -- Get table as key and option value (elipsed here)
-        local t, _ = options:getOption(arg.arg)
-
-        -- Set the option to true with specified value, if it exists
-        if t then 
-            options:setOption(t, true, arg.value)
-        else
-            _G.log:print("Argument " .. arg.arg .. " doesn't exist", 2)
-            msg:reply("L'argument \"" .. arg.arg .. "\" n'existe pas. Pour obtenir l'aide, tapez `%help`")
-            return
-        end
-    end
-
     -- local keys = options:getKeys()
-    local _, xyear = options:getOption("--year")
-    local _, xmonth = options:getOption("--month")
-    local _, xday = options:getOption("--day")
+    local xyear = options:getValue("--year")
+    local xmonth = options:getValue("--month")
+    local xday = options:getValue("--day")
 
     showTable(xmonth)
 

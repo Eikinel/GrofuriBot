@@ -11,11 +11,13 @@ _G.roles = {
     admin = "563731669912387625",
     bot = "563710698979459072",
     grofuri = "563739629795409961",
-    player = "563739379529547817"
+    player = "563739379529547817",
+    gropd = "581023529231712256"
 }
 _G.channels = {
     challenge = "563852208932651010",
     bot = "564029644257361920",
+    suggestions = "573868679519797269",
     test_bot = "563713704282030081"
 }
 _G.guildId = "563708262369984522"
@@ -72,6 +74,56 @@ client:on('messageCreate', function(msg)
         else
             _G.log:print(msg.author.tag .. " : command " .. command .. " does not exist", 2)
 		end
+    end
+end)
+
+client:on('reactionAdd', function(reaction, userId)
+    local message = reaction.message
+    local guild = message.guild
+    local user = guild:getMember(userId)
+
+    -- Pending carries both message information and options
+    for _, pending in ipairs(_G.challenge:getPending()) do
+        if message.id == pending.message.id then
+            local title = pending.options:getValue("--title")
+            local description = pending.options:getValue("--description")
+
+            _G.log:print("Reaction \"" .. reaction.emojiHash .. "\" added by " ..
+                guild:getMember(userId).name .. " on message with title \"" .. title .. "\"")
+
+            local agree = message.reactions:find(function(r) if r.emojiHash == "✅" then return r end end)
+            local nplayers = guild.members:count(function(m) if m:hasRole(_G.roles.player) then return m end end)
+
+            -- Add challenge to the JSON if more than 50% of players agree
+            if agree.count > 1 then --math.ceil(nplayers / 2) then
+                if not _G.challenge:parse(_G.conf.challengesFile) then return end
+                local challId = #_G.challenge.all.standard + 1
+
+                table.insert(_G.challenge.all.standard,
+                    { 
+                        title = title,
+                        description = description,
+                        id = challId,
+                        authorId = pending.authorId
+                    }
+                )
+                print(title, description, challId, pending.authorId)
+                _G.challenge:update(_G.conf.challengesFile)
+                _G.log:print("Added challenge n°" .. challId .. " with title " .. title .. " and description " .. description)
+            end
+        end
+    end
+end)
+
+client:on('reactionRemove', function(reaction, userId)
+    local message = reaction.message
+    local user = message.guild:getMember(userId)
+
+    -- Pending carries both message information and options
+    for _, pending in ipairs(_G.challenge:getPending()) do
+        if message.id == pending.message.id then
+            _G.log:print("Reaction \"" .. reaction.emojiHash .. "\" removed by " .. user.name .. " on message with title \"" .. pending.options:getValue("--title") .. "\"")
+        end
     end
 end)
 

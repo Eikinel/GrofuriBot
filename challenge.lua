@@ -4,6 +4,7 @@ require("tools/show_table")
 local M = {
     all = {},
     available = {},
+    pending = {},
     current = nil
 }
 M.__index = M
@@ -87,13 +88,15 @@ end
 function M:update(filepath)
     -- No need to update if the id is already in the array
     -- This can happen if the admin manually start a challenge using an ID
-    for _, id in ipairs(self.all.done) do
-        if id == self.current.id then
-            return
+    if self.current then
+        for _, id in ipairs(self.all.done) do
+            if id == self.current.id then
+                return
+            end
         end
+    
+        table.insert(self.all.done, self.current.id)
     end
-   
-    table.insert(self.all.done, self.current.id)
 
     local updated = json.encode(self.all)
     local file = io.open(filepath, "w")
@@ -107,8 +110,16 @@ function M:update(filepath)
     self.available = {}
 end
 
+function M:addPending(msg, authorId, options)
+    self.pending[#self.pending + 1] = { message = msg, authorId = authorId, options = options }
+end
+
 function M:getCurrent()
     return self.current
+end
+
+function M:getPending()
+    return self.pending
 end
 
 function M:getChallengeById(id)
