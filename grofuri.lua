@@ -61,7 +61,8 @@ end)
 client:on('messageCreate', function(msg)    
     if string.sub(msg.content, 0, #trigger) == trigger and
     (msg.channel.id == _G.channels.bot or
-    msg.channel.id == _G.channels.test_bot) then
+    msg.channel.id == _G.channels.test_bot or
+    msg.channel.id == _G.channels.suggestions) then
         local sep = string.find(msg.content, " ")
         if sep then sep = sep - 1 end
         local command = string.sub(msg.content, #trigger + 1, sep)
@@ -96,7 +97,7 @@ client:on('reactionAdd', function(reaction, userId)
             local nplayers = guild.members:count(function(m) if m:hasRole(_G.roles.player) then return m end end)
 
             -- Add challenge to the JSON if more than 50% of players agree
-            if agree.count > math.ceil(nplayers / 2) then
+            if agree and agree.count > math.ceil(nplayers / 2) then
                 if not _G.challenge:parse(_G.conf.challengesFile) then return end
                 local challId = #_G.challenge.all.standard + 1
 
@@ -112,7 +113,7 @@ client:on('reactionAdd', function(reaction, userId)
                 _G.log:print("Added challenge n°" .. challId .. " with title \"" .. title .. "\" and description \"" .. description .. "\"")
                 message:reply("Le challenge n°" .. challId .. "\"Si tu " .. title .. " aujourd'hui\" a été validé !")
                 pending.message:unpin()
-            elseif disagree.count > math.ceil(nplayers / 2) then
+            elseif disagree and disagree.count > math.ceil(nplayers / 2) then
                 _G.log:print("Challenge with title \"" .. title .. "\" and description \"" .. description .. "\" has been rejected")
                 message:reply("Le challenge n°" .. challId .. "\"Si tu " .. title .. " aujourd'hui\" a été rejeté.")
                 pending.message:unpin()
