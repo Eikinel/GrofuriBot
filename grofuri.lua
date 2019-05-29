@@ -92,6 +92,7 @@ client:on('reactionAdd', function(reaction, userId)
                 guild:getMember(userId).name .. " on message with title \"" .. title .. "\"")
 
             local agree = message.reactions:find(function(r) if r.emojiHash == "✅" then return r end end)
+            local disagree = message.reactions:find(function(r) if r.emojiHash == "❌" then return r end end)
             local nplayers = guild.members:count(function(m) if m:hasRole(_G.roles.player) then return m end end)
 
             -- Add challenge to the JSON if more than 50% of players agree
@@ -109,6 +110,11 @@ client:on('reactionAdd', function(reaction, userId)
                 )
                 _G.challenge:update(_G.conf.challengesFile)
                 _G.log:print("Added challenge n°" .. challId .. " with title \"" .. title .. "\" and description \"" .. description .. "\"")
+                message:reply("Le challenge n°" .. challId .. "\"Si tu " .. title .. " aujourd'hui\" a été validé !")
+                pending.message:unpin()
+            elseif disagree.count > math.ceil(nplayers / 2) then
+                _G.log:print("Challenge with title \"" .. title .. "\" and description \"" .. description .. "\" has been rejected")
+                message:reply("Le challenge n°" .. challId .. "\"Si tu " .. title .. " aujourd'hui\" a été rejeté.")
                 pending.message:unpin()
             end
         end
