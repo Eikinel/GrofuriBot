@@ -112,7 +112,7 @@ client:on('reactionAdd', function(reaction, userId)
             local nplayers = guild.members:count(function(m) if m:hasRole(_G.roles.player) then return m end end)
 
             -- Add challenge to the JSON if more than 50% of players agree
-            if agree and agree.count > 1 then--math.floor(nplayers / 2) + 1 then
+            if agree and agree.count > math.floor(nplayers / 2) + 1 then
                 if not _G.challenge:parse(_G.conf.challengesFile) then return end
                 local challId = #_G.challenge.all.standard + 1
 
@@ -127,7 +127,7 @@ client:on('reactionAdd', function(reaction, userId)
 
                 _G.challenge:update(_G.conf.challengesFile)
                 validate(true, pos, message, title, description, challId)
-            elseif disagree and disagree.count > 1 then--math.floor(nplayers / 2) + 1 then
+            elseif disagree and disagree.count > math.floor(nplayers / 2) + 1 then
                 validate(false, pos, message, title, description)
             end
 
