@@ -89,13 +89,15 @@ function M:update(filepath)
     -- No need to update if the id is already in the array
     -- This can happen if the admin manually start a challenge using an ID
     if self.current then
+        local isdone = false
+
         for _, id in ipairs(self.all.done) do
             if id == self.current.id then
-                return
+                isdone = true
             end
         end
     
-        table.insert(self.all.done, self.current.id)
+        if not isdone then table.insert(self.all.done, self.current.id) end
     end
 
     local updated = json.encode(self.all)
