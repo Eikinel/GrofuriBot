@@ -34,6 +34,21 @@ local clock = discordia.Clock()
 local history = require('tools/history')
 local trigger = "%"
 
+-- Internal function for suggestion validation
+local function validate(bool, pos, message, title, description, challId)
+    if bool then
+        _G.log:print("Added challenge n°" .. challId .. " with title \"" .. title .. "\" and description \"" .. description .. "\"")
+        message:setContent("**Le challenge n°" .. challId .. " \"Si tu " .. title .. " aujourd'hui\" a été validé !**")
+    else
+        _G.log:print("Challenge with title \"" .. title .. "\" and description \"" .. description .. "\" has been rejected")
+        message:setContent("*Le challenge \"Si tu " .. title .. " aujourd'hui\" a été rejeté.*")
+    end
+    message:setEmbed()
+    message:clearReactions()
+    message:unpin()
+    table.remove(_G.challenge:getPending(), pos)
+end
+
 client:once('ready', function()
     -- List all files in /commands
     local files = io.popen("ls commands","r")
@@ -84,7 +99,7 @@ client:on('reactionAdd', function(reaction, userId)
     local user = guild:getMember(userId)
 
     -- Pending carries both message information and options
-    for _, pending in ipairs(_G.challenge:getPending()) do
+    for pos, pending in ipairs(_G.challenge:getPending()) do
         if message.id == pending.message.id then
             local title = pending.options:getValue("--title")
             local description = pending.options:getValue("--description")
@@ -97,7 +112,7 @@ client:on('reactionAdd', function(reaction, userId)
             local nplayers = guild.members:count(function(m) if m:hasRole(_G.roles.player) then return m end end)
 
             -- Add challenge to the JSON if more than 50% of players agree
-            if agree and agree.count > math.floor(nplayers / 2) + 1 then
+            if agree and agree.count > 1 then--math.floor(nplayers / 2) + 1 then
                 if not _G.challenge:parse(_G.conf.challengesFile) then return end
                 local challId = #_G.challenge.all.standard + 1
 
@@ -109,15 +124,14 @@ client:on('reactionAdd', function(reaction, userId)
                         authorId = pending.authorId
                     }
                 )
+
                 _G.challenge:update(_G.conf.challengesFile)
-                _G.log:print("Added challenge n°" .. challId .. " with title \"" .. title .. "\" and description \"" .. description .. "\"")
-                message:reply("Le challenge n°" .. challId .. "\"Si tu " .. title .. " aujourd'hui\" a été validé !")
-                pending.message:unpin()
-            elseif disagree and disagree.count > math.floor(nplayers / 2) + 1 then
-                _G.log:print("Challenge with title \"" .. title .. "\" and description \"" .. description .. "\" has been rejected")
-                message:reply("Le challenge n°" .. challId .. "\"Si tu " .. title .. " aujourd'hui\" a été rejeté.")
-                pending.message:unpin()
+                validate(true, pos, message, title, description, challId)
+            elseif disagree and disagree.count > 1 then--math.floor(nplayers / 2) + 1 then
+                validate(false, pos, message, title, description)
             end
+
+            break
         end
     end
 end)
