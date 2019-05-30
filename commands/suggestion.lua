@@ -19,16 +19,19 @@ _G.registerCommand({"suggestion", "suggest"}, function(msg, args)
     end
 
     local membed = embed.new()
+    local title = options:getValue("--title")
+    local description = options:getValue("--description")
+    local isneg = title:find("(n[e'].+pas)")
 
     membed:setColor(_G.colorChart.default)
     membed:setAuthor("Nouveau challenge !", "", client.user:getAvatarURL())
     membed:setThumbnail(msg.author and msg.author:getAvatarURL() or nil)
     membed:setDescription("La challenge du jour est...")
     membed:addField(
-        "Si tu __**" .. options:getValue("--title") .. "**__ aujourd'hui, tu es *furry* !",
-        options:getValue("--description"))
+        "Si tu __**" .. title .. "**__ aujourd'hui, tu es *furry* !",
+        description)
     membed:addField(
-        "Si vous avez perdu, pensez à utiliser la commande `%gperdu` pour enregistrer votre score de grofuri",
+        "Si vous avez " .. (isneg and "gagné" or "perdu") .. ", pensez à utiliser la commande `%g" .. (isneg and "gagné" or "perdu") .. "` pour enregistrer votre score de grofuri",
         [[\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_]])
     membed:setFooter("Proposé par " .. (msg.author and msg.author.tag or "Unknown"))
     membed:setTimestamp(os.date("!%Y-%m-%dT%TZ"))

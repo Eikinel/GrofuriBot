@@ -79,7 +79,7 @@ _G.registerCommand({"start"}, function(msg, args)
         "Si tu __**" .. current.title .. "**__ aujourd'hui, tu es *furry* !",
         current.description)
     membed:addField(
-        "Si vous avez perdu, pensez à utiliser la commande `%gperdu` pour enregistrer votre score de grofuri",
+        "Si vous avez perdu, pensez à utiliser la commande `%g" .. (current.isneg and "gagné" or "perdu") .. "` pour enregistrer votre score de grofuri",
         [[\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_]])
     membed:setFooter("Proposé par " .. (author and author.tag or "Unknown"))
     membed:setTimestamp(os.date("!%Y-%m-%dT%TZ"))

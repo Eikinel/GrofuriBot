@@ -155,6 +155,7 @@ clock:on('hour', function()
     if (now.hour == 0) and _G.commands["start"] then
         local file = io.open(_G.conf.playersFile, "a+")
         local data = json.decode(file:read("*a"))
+        local current = _G.challenge:getCurrent()
 
         -- Empty player file (should not happend)
         if not data or not data.players then
@@ -166,7 +167,7 @@ clock:on('hour', function()
             local player = history.searchPlayerById(data.players, playerData.id)
 
             -- Goes 1 hour back to add the win to history for yesterday's challenge
-            history.addToHistory(player, os.date(history.dateFormat, os.time() - 60 * 60), true, _G.challenge:getCurrent().id)
+            history.addToHistory(player, os.date(history.dateFormat, os.time() - 60 * 60), not current.isneg, current.id)
         end
 
         io.open(_G.conf.playersFile, "w"):close() -- Flush file content
