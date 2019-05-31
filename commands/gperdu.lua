@@ -100,5 +100,5 @@ _G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"},
         end
     end
             
-    --guild:getChannel(_G.channels.challenge):send({embed = membed})
+    guild:getChannel(_G.channels.challenge):send({embed = membed})
 end)
