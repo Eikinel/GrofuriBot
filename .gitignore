@@ -2,6 +2,7 @@
 token.txt
 *.log
 players.json
+challenges.json
 bros.txt
 
 # Compiled Lua sources

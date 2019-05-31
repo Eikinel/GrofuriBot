@@ -70,6 +70,7 @@ _G.registerCommand({"start"}, function(msg, args)
     local current = challenge:getCurrent()
     local author = client:getUser(current.authorId)
     local membed = embed.new()
+    local which = current.type == "win" and "gagné" or (current.type == "lose" and "perdu" or "gagné/perdu")
     
     membed:setColor(_G.colorChart.default)
     membed:setAuthor("Nouveau challenge !", "", client.user:getAvatarURL())
@@ -79,10 +80,10 @@ _G.registerCommand({"start"}, function(msg, args)
         "Si tu __**" .. current.title .. "**__ aujourd'hui, tu es *furry* !",
         current.description)
     membed:addField(
-        "Si vous avez perdu, pensez à utiliser la commande `%g" .. (current.isneg and "gagné" or "perdu") .. "` pour enregistrer votre score de grofuri",
+        "Si vous avez " .. which .. ", pensez à utiliser la commande `%g" .. which .. "` pour enregistrer votre score de grofuri",
         [[\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_]])
     membed:setFooter("Proposé par " .. (author and author.tag or "Unknown"))
     membed:setTimestamp(os.date("!%Y-%m-%dT%TZ"))
-    channel:send({embed = membed})
+    --channel:send({embed = membed})
     _G.log:print("Challenge n°" .. current.id .. " sent to the guild \"" .. guild.name .. "\"")
 end)

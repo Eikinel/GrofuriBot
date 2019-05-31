@@ -80,7 +80,6 @@ function M:selectChallenge(challengeId)
         self.current = copy(self.available.standard[challengeId])
     end
 
-    self.current.isneg = self.current.title:find("(n[e'].+pas)") and true or false
     _G.log:print("Challenge n°" .. self.current.id .. " selected", 1)
 
     return true

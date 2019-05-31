@@ -15,10 +15,10 @@ end
 _G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"}, function(msg, args)
     local guild = msg.guild
     local author = msg.author
-    local challenge = _G.challenge:getCurrent()
+    local current = _G.challenge:getCurrent()
 
     -- No challenge inbound
-    if not challenge then
+    if not current then
         _G.log:print("No challenge is running.", 2)
         msg:reply("Il n'y a aucun challenge en cours. Reviens plus tard !")
         return
@@ -34,14 +34,17 @@ _G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"},
     local sep = msg.content:find(" ")
     if sep then sep = sep - 1 end
     local command = msg.content:sub(2, sep)
+    local iscommandwin = command == "ggagné" or command == "gagné" or command == "palejeu"
 
-    -- Force the player to use one command or its opposite according to the negativity of the challenge
-    if challenge.isneg and (command == "gperdu" or command == "perdu" or command == "lejeu") or
-    not challenge.isneg and (command == "ggagné" or command == "gagné" or command == "palejeu") then
-        _G.log:print("Player " .. author.name .. " used the wrong function")
-        msg:reply("Utilisez la commande inverse `%g" .. (challenge.isneg and "gagné" or "perdu") ..
-        "` car le challenge indique une action à **" .. (challenge.isneg and "ne pas" or "") .. " faire**.\n" ..
-        "Vous " .. (challenge.isneg and "perdrez" or "gagnerez") .. " **automatiquement** à la fin de la journée si la commande n'a pas été tapée.")
+    -- Force the player to use one command or its opposite according to challenge type
+    if current.type == "win" and not iscommandwin or
+    current.type == "lose" and iscommandwin then
+        local iswin = current.type == "win" and true or false
+
+        _G.log:print("Player " .. author.name .. " used the command " .. command .. " but the challenge type is " .. current.type)
+        msg:reply("Utilisez la commande inverse `%g" .. (iswin and "gagné" or "perdu") ..
+        "` car le challenge indique une action de type **" .. (iswin and "gagneable" or "perdable") .. "**.\n" ..
+        "Vous " .. (iswin and "perdrez" or "gagnerez") .. " **automatiquement** à la fin de la journée si la commande n'a pas été tapée.")
         return
     end
 
@@ -55,7 +58,7 @@ _G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"},
     end
 
     local player = history.searchPlayerById(data.players, author.id)
-    local set = history.addToHistory(player, os.date(history.dateFormat), challenge.isneg, challenge.id)
+    local set = history.addToHistory(player, os.date(history.dateFormat), iscommandwin, current.id)
     if set == -1 then msg:reply("Tu as déjà complété ce challenge.") return end
 
     io.open(_G.conf.playersFile, "w"):close() -- Flush file content
@@ -64,7 +67,7 @@ _G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"},
 
     local membed = embed:new()
 
-    if challenge.isneg then
+    if iscommandwin then
         membed:setColor(_G.colorChart.default)
         membed:setAuthor("🔔 NOUS AVONS UN GAGNANT 🔔", "", msg.client.user:getAvatarURL())
         membed:setThumbnail(msg.author:getAvatarURL())
@@ -97,5 +100,5 @@ _G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"},
         end
     end
             
-    guild:getChannel(_G.channels.challenge):send({embed = membed})
+    --guild:getChannel(_G.channels.challenge):send({embed = membed})
 end)

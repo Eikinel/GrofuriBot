@@ -7,7 +7,8 @@ _G.registerCommand({"suggestion", "suggest"}, function(msg, args)
     local guild = client:getGuild(_G.guildId)
     local options = opt:new(
         { "--title" },
-        { "--description" }
+        { "--description" },
+        { "--type" }
     )
 
     options:splitArgs(args)
@@ -21,7 +22,17 @@ _G.registerCommand({"suggestion", "suggest"}, function(msg, args)
     local membed = embed.new()
     local title = options:getValue("--title")
     local description = options:getValue("--description")
-    local isneg = title:find("(n[e'].+pas)")
+    local type = options:getValue("--type") or "lose"
+
+    if type ~= "win" and type ~= "lose" and type ~= "both" then
+        _G.log:print("Type argument is not valid : \"" .. type .. "\" passed", 3)
+        msg:reply("Le type \"" .. type .. "\" n'est pas valide. Les types autorisés sont \"win\", \"lose\" et \"both\".")
+        return
+    end
+
+    _G.log:print("Challenge with title " .. title .. " and type " .. type .. " suggested.")
+
+    local which = type == "win" and "gagné" or (type == "lose" and "perdu" or "gagné/perdu")
 
     membed:setColor(_G.colorChart.default)
     membed:setAuthor("Nouveau challenge !", "", client.user:getAvatarURL())
@@ -31,7 +42,7 @@ _G.registerCommand({"suggestion", "suggest"}, function(msg, args)
         "Si tu __**" .. title .. "**__ aujourd'hui, tu es *furry* !",
         description)
     membed:addField(
-        "Si vous avez " .. (isneg and "gagné" or "perdu") .. ", pensez à utiliser la commande `%g" .. (isneg and "gagné" or "perdu") .. "` pour enregistrer votre score de grofuri",
+        "Si vous avez " .. which .. ", pensez à utiliser la commande `%g" .. which .. "` pour enregistrer votre score de grofuri",
         [[\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_]])
     membed:setFooter("Proposé par " .. (msg.author and msg.author.tag or "Unknown"))
     membed:setTimestamp(os.date("!%Y-%m-%dT%TZ"))

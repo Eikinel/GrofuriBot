@@ -103,6 +103,7 @@ client:on('reactionAdd', function(reaction, userId)
         if message.id == pending.message.id then
             local title = pending.options:getValue("--title")
             local description = pending.options:getValue("--description")
+            local type = pending.options:getValue("--type") or "lose"
 
             _G.log:print("Reaction \"" .. reaction.emojiHash .. "\" added by " ..
                 guild:getMember(userId).name .. " on message with title \"" .. title .. "\"")
@@ -118,9 +119,10 @@ client:on('reactionAdd', function(reaction, userId)
 
                 table.insert(_G.challenge.all.standard,
                     { 
+                        id = challId,
                         title = title,
                         description = description,
-                        id = challId,
+                        type = type,
                         authorId = pending.authorId
                     }
                 )
@@ -156,6 +158,7 @@ clock:on('hour', function()
         local file = io.open(_G.conf.playersFile, "a+")
         local data = json.decode(file:read("*a"))
         local current = _G.challenge:getCurrent()
+        local state = current.type == "lose" and true or false
 
         -- Empty player file (should not happend)
         if not data or not data.players then
@@ -166,8 +169,8 @@ clock:on('hour', function()
         for _, playerData in ipairs(data.players) do
             local player = history.searchPlayerById(data.players, playerData.id)
 
-            -- Goes 1 hour back to add the win to history for yesterday's challenge
-            history.addToHistory(player, os.date(history.dateFormat, os.time() - 60 * 60), not current.isneg, current.id)
+            -- Goes 1 hour back to add the win or lose to history for yesterday's challenge
+            history.addToHistory(player, os.date(history.dateFormat, os.time() - 60 * 60), state, current.id)
         end
 
         io.open(_G.conf.playersFile, "w"):close() -- Flush file content
