@@ -67,13 +67,16 @@ _G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"},
 
     local membed = embed:new()
 
+    membed:setColor(_G.colorChart.default)
+    membed:setThumbnail(msg.author:getAvatarURL())
+
     if iscommandwin then
-        membed:setColor(_G.colorChart.default)
         membed:setAuthor("🔔 NOUS AVONS UN GAGNANT 🔔", "", msg.client.user:getAvatarURL())
-        membed:setThumbnail(msg.author:getAvatarURL())
-        membed:addField("Notre camarade s'est battu vaillament et ne deviendra pas Grofuri aujourd'hui.", "Bravo mon con.")
+        membed:addField("Notre camarade " .. msg.author.name .. "s'est battu vaillament et ne deviendra pas Grofuri aujourd'hui.", "Bravo mon con.")
         membed:setTimestamp(os.date("!%Y-%m-%dT%TZ"))
     else
+        membed:setAuthor("🔔 ALERTE FURRY 🔔", "", msg.client.user:getAvatarURL())
+        
         guild:getMember(author.id):addRole(_G.roles.grofuri)
         file = io.open("gotcha.json", "r")
 
@@ -82,10 +85,6 @@ _G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"},
         end
 
         data = json.decode(file:read("*a"))
-
-        membed:setColor(_G.colorChart.default)
-        membed:setAuthor("🔔 ALERTE FURRY 🔔", "", msg.client.user:getAvatarURL())
-        membed:setThumbnail(msg.author:getAvatarURL())
 
         if #data == 0 then
             _G.log:print("Empty array found in " .. _G.conf.playersFile .. ". Default sentence will be used", 2)
