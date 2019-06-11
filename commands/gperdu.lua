@@ -71,8 +71,9 @@ _G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"},
     membed:setThumbnail(msg.author:getAvatarURL())
 
     if iscommandwin then
+        guild:getMember(author.id):addRole(_G.roles.pafuri)
         membed:setAuthor("🔔 NOUS AVONS UN GAGNANT 🔔", "", msg.client.user:getAvatarURL())
-        membed:addField("Notre camarade " .. msg.author.name .. "s'est battu vaillament et ne deviendra pas Grofuri aujourd'hui.", "Bravo mon con.")
+        membed:addField("Notre camarade " .. msg.author.name .. " s'est battu vaillament et ne deviendra pas Grofuri aujourd'hui.", "Bravo mon con.")
         membed:setTimestamp(os.date("!%Y-%m-%dT%TZ"))
     else
         membed:setAuthor("🔔 ALERTE FURRY 🔔", "", msg.client.user:getAvatarURL())
