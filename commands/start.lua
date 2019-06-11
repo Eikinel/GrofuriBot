@@ -67,7 +67,7 @@ _G.registerCommand({"start"}, function(msg, args)
     end
 
     -- Set new "Gropd" for the day only if the guild has at least one player
-    if guild:members:find(function(m) m:hasRole(_G.roles.player) end) then
+    if guild.members:find(function(m) return m:hasRole(_G.roles.player) end) then
         local jaj = guild.members:random()
 
         while not jaj:hasRole(_G.roles.player) do jaj = guild.members:random() end
