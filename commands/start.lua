@@ -58,7 +58,7 @@ _G.registerCommand({"start"}, function(msg, args)
 
     -- Reset grofuri roles for every players
     for _, player in pairs(guild.members) do
-        if not player.user.bot then
+        if not player.user.bot and player:hasRole(_G.roles.player) then
             player:removeRole(_G.roles.grofuri)
             player:removeRole(_G.roles.pafuri)
             player:removeRole(_G.roles.gropd)
@@ -67,7 +67,8 @@ _G.registerCommand({"start"}, function(msg, args)
     end
 
     -- Set new "Gropd" for the day
-    guild.members:random():addRole(_G.roles.gropd)
+    local jaj = guild.members:random()
+    while not jaj:hasRole(_G.roles.player) do jaj = guild.members:random() end
 
     -- Construct new message to send to the guild
     local current = challenge:getCurrent()
