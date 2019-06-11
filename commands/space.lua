@@ -12,5 +12,5 @@ _G.registerCommand({"space", "aesthetic", "ae"}, function(msg, args)
         ret = ret .. " "
     end
 
-    msg:reply("`" .. ret .. "`")
+    msg:reply(ret)
 end)

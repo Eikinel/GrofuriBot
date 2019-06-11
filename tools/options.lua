@@ -2,8 +2,11 @@ local options = {}
 options.__index = options
 
 function options:splitArgs(args)
+    local longpattern = "^(%-%-[%a-]+)"
+    local shortpattern = "^(%-%a+)$"
+
     for i, arg in ipairs(args) do
-        local key = arg:match("^(%-%-[%a-]+)")
+        local key = arg:match(longpattern)
 
         if key then
             -- Get next arg as value temporarily, if exists
@@ -13,13 +16,13 @@ function options:splitArgs(args)
 
             -- Double check tmp value to check if it does not match argument format
             -- It can be bypassed by wrapping text between quotes (i.e --arg "--value")
-            if value then isarg = value:match("^(%-%-%a+)") or value:match("%-%a+$") end
+            if value then isarg = value:match(longpattern) or value:match(shortpattern) end
 
             self.options[t] = {}
             self.options[t].arg = key
             self.options[t].value = (value and isarg == nil) and value or nil
-        elseif arg:match("%-%a+$") then
-            key = arg:match("%-%a+$")
+        elseif arg:match(shortpattern) then
+            key = arg:match(shortpattern)
             local t = self:getTableKey(key)
 
             for n = 2, #arg do

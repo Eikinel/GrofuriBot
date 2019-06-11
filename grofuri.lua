@@ -152,11 +152,9 @@ end)
 
 clock:on('hour', function()
     local now = os.date("*t")
-    local greenwich = os.date("!*t")
-    local offset = now.hour - greenwich.hour
 
     -- Delivers new challenge everyday at midnight
-    if (now.hour - offset == 0) and _G.commands["start"] then
+    if (now.hour - 2 == 0) and _G.commands["start"] then
         local file = io.open(_G.conf.playersFile, "a+")
         local data = json.decode(file:read("*a"))
         local current = _G.challenge:getCurrent()

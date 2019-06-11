@@ -11,7 +11,11 @@ _G.registerCommand({"suggestion", "suggest"}, function(msg, args)
         { "--type" }
     )
 
+    showTable(args)
+
     options:splitArgs(args)
+
+    showTable(options)
 
     if args == {} then
         _G.log:print("No argument provided", 2)
