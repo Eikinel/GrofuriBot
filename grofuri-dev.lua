@@ -1,53 +1,27 @@
 -- Dev entry point of GrofuriBot
--- Add discordia and various variables to the global scope
-_G.discordia = require('discordia')
-_G.log = require('tools/log')
-_G.json = require('json')
-_G.challenge = require('challenge')
-_G.roles = {
-    admin = "563731669912387625",
-    bot = "563710698979459072",
-    grofuri = "563739629795409961",
-    pafuri = "585007724765511680",
-    player = "563739379529547817",
-    gropd = "581023529231712256"
-}
-_G.channels = {
-    challenge = "563852208932651010",
-    bot = "564029644257361920",
-    suggestions = "573868679519797269",
-    test_bot = "563713704282030081"
-}
-_G.guildId = "563708262369984522"
-_G.conf = {
-    guildsFolder = "guilds/",
-    settingsFile = "settings.json",
-    playersFile = "players.json",
-    challengesFile = "challenges.json",
-    gotchaFile = "gotcha.json"
-}
-
--- Internal variables
-require('tools/split')
-local history = require('tools/history')
-local commands = {}
+-- Discordia variables
+local discordia = require('discordia')
 local client = discordia.Client({cacheAllMembers = true})
 local clock = discordia.Clock()
+
+-- Tools & conf
+require('tools/split')
+local log = require('tools/log')
+local challenge = require('challenge')
+local conf = require('conf')
 local trigger = "dev%"
-local colorChart = {
-    default = 0xF02E89
-}
+local commands = {}
 
 -- Register command using its name and code
 local function registerCommand(aliases, callback)
     local name = aliases[1]
 
     commands[name] = function(msg, args) callback(msg, args) end
-    _G.log:print("Command '" .. name .. "' registered")
+    log:print("Command '" .. name .. "' registered")
 
     for i = 2, #aliases do
         commands[aliases[i]] = commands[name]
-        _G.log:print("Alias '" .. aliases[i] .. "' of command '" .. name .. "' registered")
+        log:print("Alias '" .. aliases[i] .. "' of command '" .. name .. "' registered")
     end
 end
 
@@ -66,10 +40,12 @@ local function validate(bool, pos, message, title, description, challId)
     table.remove(_G.challenge:getPending(), pos)
 end
 
+-- Cleaned env for command files
 local subenv = {}
-subenv.require = require
+subenv.require = require -- Luvit require != lua require
 subenv.registerCommand = registerCommand
-subenv.colorChart = colorChart
+subenv.log = log
+subenv.conf = conf
 
 client:once('ready', function()
     -- List all files in /commands
@@ -79,19 +55,16 @@ client:once('ready', function()
     for file in files:lines() do
         local f, err = pcall(loadfile("commands/" .. file, "t", subenv))
 
-        if not f then _G.log:print("Error in pcall while parsing command files : " .. err, 3) end
+        if err then log:print("Error in pcall while parsing command files : " .. err, 3) end
     end
 
-    _G.log:print('Logged in as '.. client.user.username .. " on server " .. client:getGuild(guildId).name)
-    _G.log:print('Starting time events')
+    log:print("Logged in as ".. client.user.username)
+    log:print("Starting time events")
     clock:start()
 end)
 
 client:on('messageCreate', function(msg)    
-    if string.sub(msg.content, 0, #trigger) == trigger and
-    (msg.channel.id == _G.channels.bot or
-    msg.channel.id == _G.channels.test_bot or
-    msg.channel.id == _G.channels.suggestions) then
+    if string.sub(msg.content, 0, #trigger) == trigger then
         local sep = string.find(msg.content, " ")
         if sep then sep = sep - 1 end
         local command = string.sub(msg.content, #trigger + 1, sep)
@@ -99,10 +72,10 @@ client:on('messageCreate', function(msg)
 
         -- Execute the command if it exists
         if commands[command] then
-            _G.log:print(msg.author.tag .. " called function " .. command)
+            log:print(msg.author.tag .. " called function " .. command)
             commands[command](msg, args)
         else
-            _G.log:print(msg.author.tag .. " : command " .. command .. " does not exist", 2)
+            log:print(msg.author.tag .. " : command " .. command .. " does not exist", 2)
 		end
     end
 end)
@@ -119,7 +92,7 @@ client:on('reactionAdd', function(reaction, userId)
             local description = pending.options:getValue("--description")
             local type = pending.options:getValue("--type") or "lose"
 
-            _G.log:print("Reaction \"" .. reaction.emojiHash .. "\" added by " ..
+            log:print("Reaction \"" .. reaction.emojiHash .. "\" added by " ..
                 guild:getMember(userId).name .. " on message with title \"" .. title .. "\"")
 
             local agree = message.reactions:find(function(r) if r.emojiHash == "✅" then return r end end)
@@ -159,7 +132,7 @@ client:on('reactionRemove', function(reaction, userId)
     -- Pending carries both message information and options
     for _, pending in ipairs(_G.challenge:getPending()) do
         if message.id == pending.message.id then
-            _G.log:print("Reaction \"" .. reaction.emojiHash .. "\" removed by " .. user.name .. " on message with title \"" .. pending.options:getValue("--title") .. "\"")
+            log:print("Reaction \"" .. reaction.emojiHash .. "\" removed by " .. user.name .. " on message with title \"" .. pending.options:getValue("--title") .. "\"")
         end
     end
 end)
@@ -176,7 +149,7 @@ clock:on('hour', function()
 
         -- Empty player file (should not happend)
         if not data or not data.players then
-            _G.log:print("No players available (empty file)", 3)
+            log:print("No players available (empty file)", 3)
             return
         end
 
@@ -193,7 +166,7 @@ clock:on('hour', function()
 
         commands["start"](client)
     else
-        _G.log:print("H-" .. 25 - (now.hour + 1) .. " before starting a new challenge")
+        log:print("H-" .. 25 - (now.hour + 1) .. " before starting a new challenge")
     end
 end)
 
@@ -205,7 +178,7 @@ function getBotToken(filename)
     local file = io.open(filename)
 
     if not file then
-        _G.log:print("Cannot open file " .. filename)
+        log:print("Cannot open file " .. filename)
         return ""
     end
 

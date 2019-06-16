@@ -1,9 +1,9 @@
-local test = require('tools/embed')
+local embed = require('tools/embed')
 
 registerCommand({"help", "man"}, function(msg)
-    membed = test:new()
+    membed = embed:new()
 
-    membed:setColor(colorChart.default)
+    membed:setColor(conf.colorChart.default)
     membed:setAuthor("Liste des commandes", "", msg.client.user:getAvatarURL())
     membed:setDescription("Voici la liste de toutes les commandes que je peux effectuer, ainsi que leurs options.\n" ..
     "Pour toute question/report de problème, veuillez envoyer un message privé à " .. msg.client.owner.mentionString)

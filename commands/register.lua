@@ -27,7 +27,6 @@ registerCommand({"register", "add"}, function(msg, args)
         if obj.id == player.id then
             _G.log:print("Player \"" .. player.tag .. "\" with ID " .. player.id .. " already exists", 2)
             msg:reply((sameGuy and "Tu" or player.mentionString) .. " es" .. (sameGuy and "" or "t") .. " déjà enregistré en tant que joueur !")
-                
             return
         end
     end
