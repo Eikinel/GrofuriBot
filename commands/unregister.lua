@@ -1,4 +1,4 @@
-_G.registerCommand({"unregister", "remove"}, function(msg, args)
+registerCommand({"unregister", "remove"}, function(msg, args)
     local guild = msg.guild
     local player = msg.author
     local sameGuy = true

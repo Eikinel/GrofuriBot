@@ -1,4 +1,4 @@
-_G.registerCommand({"space", "aesthetic", "ae"}, function(msg, args)
+registerCommand({"space", "aesthetic", "ae"}, function(msg, args)
     local ret = ""
 
     for _, str in ipairs(args) do

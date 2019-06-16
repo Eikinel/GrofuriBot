@@ -1,4 +1,4 @@
-_G.registerCommand({"register", "add"}, function(msg, args)
+registerCommand({"register", "add"}, function(msg, args)
     local guild = msg.guild
     local player = msg.author
 

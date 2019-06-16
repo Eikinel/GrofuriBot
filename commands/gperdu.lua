@@ -12,7 +12,7 @@ local function selectRandomSentence(data, msg) -- Select a random author, other 
     return msg.client:getUser(data[i].authorId), data[i].sentences[math.random(#data[i].sentences)] 
 end
 
-_G.registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"}, function(msg, args)
+registerCommand({"gperdu", "perdu", "lejeu", "ggagné", "gagné", "palejeu"}, function(msg, args)
     local guild = msg.guild
     local author = msg.author
     local current = _G.challenge:getCurrent()

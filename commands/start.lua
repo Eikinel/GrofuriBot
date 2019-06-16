@@ -1,6 +1,7 @@
 require('tools/embed')
+require('tools/verify_roles')
 
-_G.registerCommand({"start"}, function(msg, args)
+registerCommand({"start"}, function(msg, args)
     local client = msg.client or msg
     local guild = client:getGuild(_G.guildId)
     local challengeId = nil
@@ -8,7 +9,7 @@ _G.registerCommand({"start"}, function(msg, args)
     -- Check if it's a message
     if msg.author then
         -- Check for permissions
-        if not guild:getMember(msg.author.id):hasRole(_G.roles.admin) then
+        if not verifyRole(guild:getMember(msg.author.id), { _G.roles.admin }) then
             _G.log:print(msg.author.tag .. " attempted to start a challenge", 2)
             msg:reply("Tu n'as pas les permissions suffisantes pour démarrer un challenge")
             return

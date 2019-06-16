@@ -1,9 +1,7 @@
 # Bot related files
 token.txt
 *.log
-players.json
-challenges.json
-bros.txt
+guilds/
 
 # Compiled Lua sources
 luac.out

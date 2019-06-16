@@ -1,4 +1,4 @@
-_G.registerCommand({"f"}, function(msg, args)
+registerCommand({"f"}, function(msg, args)
     local ret = ""
 
     for _, str in ipairs(args) do

@@ -3,7 +3,7 @@ local history = require("tools/history")
 require("tools/show_table")
 require('tools/embed')
 
-_G.registerCommand({"display", "show"}, function(msg, args)
+registerCommand({"display", "show"}, function(msg, args)
     local client = msg.client
     local guild = client:getGuild(_G.guildId)
     local players = {msg.author}

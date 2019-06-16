@@ -2,7 +2,7 @@ local opt = require("tools/options")
 require('tools/embed')
 require("tools/show_table")
 
-_G.registerCommand({"suggestion", "suggest"}, function(msg, args)
+registerCommand({"suggestion", "suggest"}, function(msg, args)
     local client = msg.client
     local guild = client:getGuild(_G.guildId)
     local options = opt:new(
