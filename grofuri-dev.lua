@@ -6,6 +6,7 @@ local clock = discordia.Clock()
 
 -- Tools & conf
 require('tools/split')
+require("tools/show_table")
 local log = require('tools/log')
 local challenge = require('challenge')
 local conf = require('conf')
@@ -42,10 +43,12 @@ end
 
 -- Cleaned env for command files
 local subenv = {}
-subenv.require = require -- Luvit require != lua require
+setmetatable(subenv, {__index = _G})
+subenv.requireLuvit = require -- Luvit require != lua require
 subenv.registerCommand = registerCommand
 subenv.log = log
 subenv.conf = conf
+subenv.showTable = showTable -- Debug only
 
 client:once('ready', function()
     -- List all files in /commands

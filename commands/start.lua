@@ -1,5 +1,5 @@
 require('tools/embed')
-require('tools/verify_roles')
+require('tools/roles')
 
 registerCommand({"start"}, function(msg, args)
     local client = msg.client or msg

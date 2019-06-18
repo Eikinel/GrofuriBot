@@ -1,6 +1,6 @@
 local opt = require("tools/options")
-local fs = require("fs")
-require("tools/verify_roles")
+local fs = requireLuvit("fs")
+require("tools/roles")
 
 registerCommand({"settings", "parameters"}, function(msg, args)
     local client = msg.client
